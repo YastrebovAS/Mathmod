@@ -3,9 +3,16 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib import admin
 from django.utils.timezone import now
 
+
+
 class lesson(models.Model):
-    title = models.CharField('Заголовок', primary_key=True, max_length=128, unique=True)
-    theory = models.FileField('Теория',upload_to='theory')
-    practice = models.FileField('Практика', upload_to='practice')
-    control = models.FileField('Контроль', upload_to='control')
+    title = models.CharField('Заголовок', max_length=128, unique=True)
+    theory = models.FileField('Теория', default=None)
+    control = models.IntegerField()
+    def __str__(self):
+        return self.title
+    class Meta:
+        verbose_name = 'Тема'
+        verbose_name_plural = 'Темы'
+
 # Create your models here.
