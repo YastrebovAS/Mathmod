@@ -3,8 +3,10 @@ from django.urls import path, include
 from . import views
 
 
+
 urlpatterns = [
-    path('', views.index, name='home'),
-    path('practice', views.practice, name = 'practice'),
-    path('theory', views.theory, name = 'theory')
+    path('', views.menu, name='home'),
+    path('practice/', include('practice.urls')),
+    path('theory/Точечная кинетика', views.dot_kinetic_theory, name = 'dot kinetic theory'),
+    path('theory/Ксенон', views.ksenon_theory, name = 'ksenon theory')
 ]

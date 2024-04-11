@@ -1,0 +1,103 @@
+{% extends 'main/practice_template.html' %}
+
+{% block title %}
+Практика
+{% endblock %}
+
+
+
+{% block input %}
+
+<form action="" method="post">
+    {% csrf_token %}
+        <p>
+        <label for="beta"> Доля запаздывающих нейтронов: </label>
+        <input type="number" id="beta" name="beta" placeholder = '0.0065' step="0.0001" min = "0" value="0.0065"/><br>
+        <label for="reactivity"> Реактивность:
+        <input type="number" id="reactivity" name="reactivity" placeholder = '0.036' step="0.001" min = "0" value="0.036"/>
+         в долях запаздывающих нейтронов</label><br>
+        <label for="step"> Шаг: </label>
+        <input type="number" id="step" name="step" placeholder = '0.05' step="0.01" min = "0" value="0.05"/>
+        1/c</label><br>
+            <label for="lambda"> Постоянная времени распада осколков:
+        <input type="number" id="lambda" name="lambda" placeholder = '0.0773' step="0.0001" min = "0" value="0.0773"/>
+            1/c</label><br>
+        <label for="average_lifetime"> Среднее время жизни мгновенных нейтронов:
+        <input type="number" id="average_lifetime" name="average_lifetime" placeholder = '0.001' step="0.001" min = "0" value="0.001"/>
+         с</label>
+        </p>
+
+        <button type="submit">Ввести входные данные</button>
+      </form>
+
+
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class = 'container' align="left">
+<h1 class="text-center" ><i>Таблица с данными 1</i></h1><br>
+    <table class="table table-dark table-striped" width="20%">
+        <thead>
+        <tr>
+            {% if d1 %}
+            <th>Ряд</th>
+            {% endif %}
+        {% for st in k1%}
+            <th>{{st}}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+        <tbody>
+    {% if d1 %}
+    {% for i in d1 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{ value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+    </table>
+    {% if d1 %}
+    <div style="width:1000;height:100">
+    {{ graph1|safe }}
+    </div>
+    {% endif %}
+    </div>
+<div class = 'container' align="left">
+    <h1 class="text-center" ><i>Таблица с данными 2</i></h1><br>
+    <table class="table table-dark table-striped" width="20%">
+    <thead>
+        <tr>
+            {% if d2 %}
+            <th>Ряд</th>
+            {% endif %}
+        {% for st in k2%}
+            <th>{{st}}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% if d2 %}
+    {% for i in d2 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{ value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+        </table>
+    {% if d2 %}
+    <div style="width:1000;height:100">
+    {{ graph2|safe }}
+    </div>
+    {% endif %}
+    </div>
+{% endblock %}

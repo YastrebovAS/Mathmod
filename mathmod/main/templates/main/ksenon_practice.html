@@ -1,0 +1,99 @@
+{% extends 'main/practice_template.html' %}
+
+{% block title %}
+ Практика - Ксенон
+{% endblock %}
+
+
+
+{% block input %}
+
+<form action="" method="post">
+    {% csrf_token %}
+        <p>
+        <label for="sigmax"> Сигма(x):
+        <input type="number" id="sigmax" name="sigmax" placeholder = '2' step="0.001" min = "0" value="2"/>
+            * 10^-18 см^2</label><br>
+        <label for="sigmaf"> Сигма(f):
+        <input type="number" id="sigmaf" name="sigmaf" placeholder = '0.0025' step="0.0001" min = "0" value="0.0025"/>
+            </label><br>
+        <label for="alpha"> Альфа: </label>
+        <input type="number" id="alpha" name="alpha" placeholder = '0.5' step="0.01" min = "0" max = 1 value="0.5"/>
+            <br>
+        <label for="neutron_flow"> Поток нейтронов:
+        <input type="number" id="neutron_flow" name="neutron_flow" placeholder = '1.8' step="0.01" min = "0" value = 1.8 />
+         * 10^17 н/(см^2*с)</label>
+        </p>
+        <button type="submit">Ввести входные данные</button>
+      </form>
+
+
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<div class = 'container' align="left">
+<h2 class="text-center" ><i>Концентрации йода и ксенона при полной остановке с 50% уровня мощности</i></h2><br>
+    <table class="table table-dark table-striped" width="20%">
+        <thead>
+        <tr>
+            {% if d1 %}
+            <th>Ряд</th>
+            {% endif %}
+        {% for st in k1%}
+            <th>{{st}}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+        <tbody>
+    {% if d1 %}
+    {% for i in d1 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{ value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+    </table>
+    {% if d1 %}
+    <div style="width:1000;height:100">
+    {{ graph1|safe }}
+    </div>
+    {% endif %}
+    </div>
+<div class = 'container' align="left">
+    <h2 class="text-center" ><i> Йодная яма приостановке с различного уровня мощности</i></h2><br>
+    <table class="table table-dark table-striped" width="20%">
+    <thead>
+        <tr>
+            {% if d2 %}
+            <th>Ряд</th>
+            {% endif %}
+        {% for st in k2%}
+            <th>{{st}}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% if d2 %}
+    {% for i in d2 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{ value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+        </table>
+    {% if d2 %}
+    <div style="width:1000;height:100">
+    {{ graph2|safe }}
+    </div>
+    {% endif %}
+    </div>
+{% endblock %}
