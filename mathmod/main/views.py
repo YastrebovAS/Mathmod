@@ -1,22 +1,30 @@
 from django.shortcuts import render
-import os
-from django.http import FileResponse
-from mathmod import settings
+
 from .models import lesson
+from .forms import lessonForm
 # Create your views here.
 
 
 def menu(request):
-    titles = lesson.objects.all()
-    print(titles)
-    return render(request,'main/menu.html',{'titles':titles})
+    theory = lesson.objects.all()
+    return render(request,'main/menu.html',{'titles':theory})
 
+def create(request):
+    error = ''
+    if request.method == 'POST':
+        form = lessonForm(request.POST)
+        print(form)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        else:
+            error = "Что-то не так с заполнением"
+    form = lessonForm()
+    data = {
+        'form': form,
+        'error': error
+    }
+    return render(request,'main/add_to_db.html',data)
 
-def dot_kinetic_theory(request):
-    filepath = os.path.join(settings.STATIC_URL, 'word/Точечная кинетика_скачок.pdf')
-    return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
-def ksenon_theory(request):
-    filepath = os.path.join(settings.STATIC_URL, 'word/Ксенон.pdf')
-    return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
 
 

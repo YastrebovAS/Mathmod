@@ -6,7 +6,9 @@ from . import views
 
 urlpatterns = [
     path('', views.menu, name='home'),
+    path('create', views.create, name='create'),
     path('practice/', include('practice.urls')),
-    path('theory/Точечная кинетика', views.dot_kinetic_theory, name = 'dot kinetic theory'),
-    path('theory/Ксенон', views.ksenon_theory, name = 'ksenon theory')
+    path('theory/', include('theory.urls'))
 ]
+
+

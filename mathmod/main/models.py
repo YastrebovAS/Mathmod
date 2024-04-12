@@ -7,8 +7,8 @@ from django.utils.timezone import now
 
 class lesson(models.Model):
     title = models.CharField('Заголовок', max_length=128, unique=True)
-    theory = models.FileField('Теория', default=None)
-    control = models.IntegerField()
+    theory = models.FileField('Теория')
+    control = models.IntegerField('Контроль')
     def __str__(self):
         return self.title
     class Meta:

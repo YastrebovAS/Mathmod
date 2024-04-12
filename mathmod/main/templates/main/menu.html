@@ -38,14 +38,15 @@
 <div class="row">
   <div class="column" style="background-color:#aaa;">
     <h2>Теория</h2>
-    <a href = "{% url 'dot kinetic theory' %}"> Точечная кинетика</a><br>
-    <a href = "{% url 'ksenon theory' %}"> Ксенон</a>
-    {{titles}}
+    {% for a in titles %}
+    <a href="{%url 'theory:theory' a.id%}">{{a.title}}<a><br>
+    {% endfor %}
   </div>
   <div class="column" style="background-color:#bbb;">
     <h2>Практика</h2>
     <a href = "{% url 'dot kinetic' %}"> Точечная кинетика</a><br>
-    <a href = "{% url 'ksenon' %}"> Ксенон</a>
+    <a href = "{% url 'ksenon' %}"> Ксенон</a><br>
+    <a href = "{% url 'reactor' %}"> Расчет реактора</a><br>
   </div>
   <div class="column" style="background-color:#ccc;">
     <h2>Контроль</h2>
@@ -54,6 +55,7 @@
 </div>
 
 
+ <a href="{% url 'create' %}"><button>Добавить запись</button><a><br>
 
 
 

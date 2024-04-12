@@ -1,0 +1,24 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Добавление темы
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+<div class = 'features' align="left">
+    <h1>Форма для создания записи </h1>
+        <form method="post" data-ajax="false">
+            {% csrf_token %}
+            {{ form.title }}<br>
+            {{ form.theory }}<br>
+            {{ form.control }}<br>
+            <span>{{ error }} </span>
+            <button type="submit">Создать запись</button>
+      </form>
+</div>
+{% endblock %}
