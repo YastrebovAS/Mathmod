@@ -1,10 +1,11 @@
-from .models import lesson
-from django.forms import ModelForm,TextInput, FileInput,NumberInput
+from .models import topic
+from django.forms import ModelForm, TextInput, FileInput, NumberInput
 
-class lessonForm(ModelForm):
+
+class topicForm(ModelForm):
     class Meta:
-        model = lesson
-        fields = ['title','theory','control']
+        model = topic
+        fields = ['title', 'theory', 'practice', 'control']
         widgets = {
             "title": TextInput(attrs={
                 'class': 'form-control',
@@ -12,8 +13,12 @@ class lessonForm(ModelForm):
             }),
             "theory": FileInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Файл с теорией',
+                'label': 'Select a file',
                 'accept': '.pdf'
+            }),
+            "practice": NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Практика'
             }),
             "control": NumberInput(attrs={
                 'class': 'form-control',

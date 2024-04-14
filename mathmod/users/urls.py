@@ -3,9 +3,9 @@ from django.urls import path, include
 from . import views
 
 
-app_name = 'theory'
+
 urlpatterns = [
-    path('<int:topic_id>', views.topic_id, name = 'theory')
+    path('', views.homepage, name='homepage')
 ]
 
 

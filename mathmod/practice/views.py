@@ -171,11 +171,11 @@ def reactor_calc(request):
         start_values = list(re.split(",",str(dict_of_post['start_val'][0])))
         start_values[0] =  start_values[0].replace('[','')
         start_values[-1] = start_values[-1].replace(']', '')
-        Colunms1 = ['Начальные значения', 'm', 'Фи', "Загрузка", "(NuF*SigmaF)t", "(Sigma_A)t",	"Dt",
+        Colunms1 = ['Начальные значения', 'Фи', "Загрузка", "(NuF*SigmaF)t", "(Sigma_A)t",	"Dt",
  'A', 'B', 'C', 'S1', 'alpha1', 'beta1', 'phi1', 'S2', 'alpha2', 'beta2', 'phi2']
-        m, phi, loading, nufsigmaft, sigma_at, Dt, A, B, C, S1, alpha1, beta1, phi1, S2, alpha2, beta2, phi2 =\
-            [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
-        for i in range(0,61):
+        phi, loading, nufsigmaft, sigma_at, Dt, A, B, C, S1, alpha1, beta1, phi1, S2, alpha2, beta2, phi2 =\
+            [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+        for i in range(0,61):  # Считывание начальных данных из реактора
             loading.append(1)
             if reactor == 'ВВЭР':
                 nufsigmaft.append(vver['(NuF*SigmaF)t'][loading[i]-1])
@@ -185,40 +185,66 @@ def reactor_calc(request):
                 nufsigmaft.append(rbmk['(NuF*SigmaF)t'][loading[i]-1])
                 sigma_at.append(rbmk['(Sigma_A)t'][loading[i]-1])
                 Dt.append(rbmk['Dt'][loading[i]-1])
-        #print(sigma_at)
-
-        for i in range(0,61):
-            if i == 60:
-                B.append((2 * Dt[i] + Dt[i - 1]) / (2 * step * step) + sigma_at[i])
-                C.append((Dt[i]) / (2 * step * step))
-                S1.append(0)
-            elif i > 0:
-                A.append((Dt[i - 1] + Dt[i]) / (2 * step * step))
-                B.append((Dt[i + 1] + 2 * Dt[i] + Dt[i - 1]) / (2 * step * step) + sigma_at[i])
-                C.append((Dt[i + 1] + Dt[i]) / (2 * step * step))
-            '''
-            if operation == 'Настройка':
-                phi.append(int(start_values[i]))
-            else:
-                phi.append(phi1[i])
-            S1.append(phi[i] * nufsigmaft[loading[i] - 1])
-            S2.append(phi1[i] * nufsigmaft[loading[i]-1])
+        for i in range(0,61): # Генерация A,B,C и обеих альф
             if i == 0:
                 alpha1.append(0)
-                beta1.append(0)
-                phi1.append(0)
                 alpha2.append(0)
+                A.append(0)
+                B.append(0)
+                C.append(0)
+            else:
+                A.append((Dt[i - 1] + Dt[i]) / (2 * step * step))
+                if i == 60:
+                    B.append((2 * Dt[i] + Dt[i - 1]) / (2 * step * step) + sigma_at[i])
+                    C.append((Dt[i]) / (2 * step * step))
+                else:
+                    B.append((Dt[i + 1] + 2 * Dt[i] + Dt[i - 1]) / (2 * step * step) + sigma_at[i])
+                    C.append((Dt[i + 1] + Dt[i]) / (2 * step * step))
+                alpha1.append(C[i] / (B[i] - A[i] * alpha1[i - 1]))
+                alpha2.append(C[i] / (B[i] - A[i] * alpha1[i - 1]))
+        for i in range(0, 61):
+            if operation == 'Настройка':
+                phi.append(int(start_values[i]))
+                S1.append(phi[i] * nufsigmaft[loading[i] - 1])
+            else:
+                phi.append(phi1[i])
+                S1.append(phi[i] * nufsigmaft[loading[i] - 1])
+            if i == 0:
+                phi1.append(0)
+        dividor = sum(S1)
+        S1 = [float(x / dividor) for x in S1]
+        for i in range(0, 61):
+            if i == 0:
+                beta1.append(0)
+            else:
+                beta1.append((A[i]*beta1[i-1]+S1[i])/(B[i]-A[i]*alpha1[i-1]))
+
+
+        phi1 = alpha1
+        beta2 = alpha2
+        phi2 = alpha2
+        S2 = S1
+        '''           
+            S2.append(phi1[i] * nufsigmaft[loading[i]-1])
+            
+                phi1.append(0)
                 beta2.append(0)
                 phi2.append(0)
-            else:
-                #alpha1.append(C[i]/(B[i]-A[i]*alpha1[i-1]))
-                #beta1.append((A[i]*beta1[i-1]+S1[i])/(B[i]-A[i]*alpha1[i-1]))
-                phi1.append(0)
-                #alpha2.append(C[i]/(B[i]-A[i]*alpha2[i-1]))
-                #beta2.append(A[i]*beta2[i-1]+S2[i])/(B[i]-A[i]*alpha2[i-1])
+            
+            phi1.append(0)
+            
+            beta2.append(A[i]*beta2[i-1]+S2[i])/(B[i]-A[i]*alpha2[i-1])
                 phi2.append(0)
             '''
 
+        numbers1 = [start_values, phi, loading, nufsigmaft, sigma_at, Dt, A, B, C, S1, alpha1, beta1, phi1, S2,
+                    alpha2, beta2, phi2]
+        dat1 = {}
+        for i in range(0, 17):
+            dat1[Colunms1[i]] = numbers1[i]
+        df1 = pd.DataFrame(dat1)
 
-
+        json_records = df1.reset_index().to_json(orient='records')
+        data1 = json.loads(json_records)
+        context = {'d1': data1, 'k1': Colunms1}
     return render(request, 'main/reactor_calc.html',context)

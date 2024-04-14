@@ -1,25 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 
-from .models import lesson
-from .forms import lessonForm
+from .models import topic
+from .forms import topicForm
 # Create your views here.
 
 
 def menu(request):
-    theory = lesson.objects.all()
+    theory = topic.objects.all()
     return render(request,'main/menu.html',{'titles':theory})
 
 def create(request):
     error = ''
     if request.method == 'POST':
-        form = lessonForm(request.POST)
-        print(form)
+        form = topicForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            newtopic = topic(theory = request.FILES['theory'], title = request.POST['title'],
+                             practice = request.POST['practice'], control = request.POST['control'])
+            newtopic.save()
             return redirect('home')
         else:
             error = "Что-то не так с заполнением"
-    form = lessonForm()
+    else:
+        form = topicForm()
     data = {
         'form': form,
         'error': error
