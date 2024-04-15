@@ -17,7 +17,7 @@ def create(request):
             newtopic = topic(theory = request.FILES['theory'], title = request.POST['title'],
                              practice = request.POST['practice'], control = request.POST['control'])
             newtopic.save()
-            return redirect('home')
+            return redirect('menu')
         else:
             error = "Что-то не так с заполнением"
     else:

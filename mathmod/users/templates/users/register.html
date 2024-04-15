@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+<div class = 'features' align="left">
+    <h1>Регистрация: </h1>
+        <form method="post" data-ajax="false" enctype= multipart/form-data>
+            {% csrf_token %}
+            {{ form.as_p }}<br>
+            <button type="submit">Зарегистрироваться</button><br>
+            <span>{{ error }} </span>
+      </form>
+</div>
+<h4>Уже есть аккаунт? Можете войти здесь:<h4>
+                <a href="{% url 'login' %}"><button>Авторизация</button></a><br>
+</body>
+</html>
