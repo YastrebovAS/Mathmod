@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'practice',
     'theory',
     'users',
+    'control',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,4 +133,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#AUTH_USER_MODEL = 'main.User'
+AUTH_USER_MODEL = 'main.User'

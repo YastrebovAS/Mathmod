@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,AbstractBaseUser
 from django.contrib import admin
 from django.utils.timezone import now
 
@@ -45,7 +45,7 @@ class topic(models.Model):
 
 
 
-class User(models.Model):
+class User(AbstractUser):
     USER = 'user_def'
     ADMIN = 'admin'
     MOD = 'mod'
@@ -53,13 +53,10 @@ class User(models.Model):
     ('user_def','USER'),
     ('mod', 'MOD'),
     ('admin','ADMIN'))
-    name = models.CharField('Имя', max_length=128)
-    surname = models.CharField('Фамилия', max_length=128)
     patronymic = models.CharField('Отчество', max_length=128, null=True)
-    email = models.CharField('Почта', max_length=128)
-    role = models.CharField('Роль', choices = ROLE_CHOICES, max_length=128)
+    role = models.CharField('Роль', choices = ROLE_CHOICES, max_length=128, default = USER)
     def __str__(self):
-        return self.surname
+        return self.username
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'

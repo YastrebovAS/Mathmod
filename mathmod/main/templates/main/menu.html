@@ -34,7 +34,7 @@
 
 
 <h2>Меню</h2>
-
+ <a href="{% url 'logout' %}"><button>Выйти из системы</button><a><br>
 <div class="row">
   <div class="column" style="background-color:#aaa;">
     <h2>Теория</h2>
@@ -47,6 +47,7 @@
     <a href = "{% url 'dot kinetic' %}"> Точечная кинетика</a><br>
     <a href = "{% url 'ksenon' %}"> Ксенон</a><br>
     <a href = "{% url 'reactor' %}"> Расчет реактора</a><br>
+    <a href = "{% url 'deflector' %}"> Реактор с отражателем</a><br>
   </div>
   <div class="column" style="background-color:#ccc;">
     <h2>Контроль</h2>
@@ -54,8 +55,17 @@
   </div>
 </div>
 
+<table>
+  <tr>
+    {% if role != "user_def" %}
+      <td><a href="{% url 'create' %}"><button>Добавить запись</button></a><br></td>
+    {% endif %}
+    {% if role == 'admin' %}
+      <td><a href="../admin"><button>Панель администратора</button></a><br></td>
+    {% endif %}
+  </tr>
+</table>
 
- <a href="{% url 'create' %}"><button>Добавить запись</button><a><br>
 
 
 

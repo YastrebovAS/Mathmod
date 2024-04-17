@@ -7,7 +7,12 @@ from .forms import topicForm
 
 def menu(request):
     theory = topic.objects.all()
-    return render(request,'main/menu.html',{'titles':theory})
+    perms = request.user.role
+    context = {
+        'titles': theory,
+        'role': str(perms)
+    }
+    return render(request,'main/menu.html',context)
 
 def create(request):
     error = ''

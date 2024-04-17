@@ -4,10 +4,6 @@ from django.http import FileResponse
 from main.models import topic
 from mathmod import settings
 
-def ksenon_theory(request):
-    filepath = os.path.join(settings.STATIC_URL, 'word/Ксенон.pdf')
-    return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
-
 def topic_id(request, topic_id):
     topic_list = topic.objects.raw(
         'SELECT id, theory FROM main_topic WHERE id = %s',

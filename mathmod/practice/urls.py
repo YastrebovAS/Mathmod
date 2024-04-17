@@ -7,4 +7,5 @@ urlpatterns = [
     path('Точечная кинетика', views.dot_kinetic, name='dot kinetic'),
     path('Ксенон', views.ksenon, name='ksenon'),
     path('Расчет реактора', views.reactor_calc, name='reactor'),
+    path('Реактор с отражателем', views.react_deflect, name='deflector')
 ]

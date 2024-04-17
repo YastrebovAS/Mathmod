@@ -7,16 +7,15 @@
 <body>
 <div class = 'features' align="left">
     <h1>Авторизация: </h1>
-        <form method="post" data-ajax="false" enctype= multipart/form-data>
+        <form method="post" autocomplete="off" enctype= multipart/form-data>
             {% csrf_token %}
-            {{ form.as_p }}<br>
+            {{ authform.as_p }}<br>
             <button type="submit">Войти</button><br>
-
 
             <span>{{ error }} </span>
       </form>
 </div>
-<h4>Нет аккаунта? Пройдите регистрацию:<h4>
+<h4>Нет аккаунта? Пройдите регистрацию:</h4>
                 <a href="{% url 'registration' %}"><button>Регистрация</button></a><br>
 </body>
 </html>

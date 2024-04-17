@@ -60,4 +60,35 @@
     </tbody>
     </table>
     </div>
+<div class = 'container' align="left">
+    <h2 class="text-center" ><i> Йодная яма приостановке с различного уровня мощности</i></h2><br>
+    <table class="table table-dark table-striped" width="20%">
+    <thead>
+        <tr>
+            {% if d2 %}
+            <th>Ряд</th>
+            {% endif %}
+        {% for st in k2%}
+            <th>{{st}}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% if d2 %}
+    {% for i in d2 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{ value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+        </table>
+    {% if d2 %}
+    <div style="width:1000;height:100">
+    {{ graph2|safe }}
+    </div>
+    {% endif %}
+    </div>
 {% endblock %}
