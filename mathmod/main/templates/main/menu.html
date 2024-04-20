@@ -39,26 +39,30 @@
   <div class="column" style="background-color:#aaa;">
     <h2>Теория</h2>
     {% for a in titles %}
-    <a href="{%url 'theory:theory' a.id%}">{{a.title}}</a><br>
+    <a href="{%url 'theory:theorylisting' a.id%}">{{a.title}}</a><br>
     {% endfor %}
   </div>
+
   <div class="column" style="background-color:#bbb;">
     <h2>Практика</h2>
-    <a href = "{% url 'dot kinetic' %}"> Точечная кинетика</a><br>
-    <a href = "{% url 'ksenon' %}"> Ксенон</a><br>
-    <a href = "{% url 'reactor' %}"> Расчет реактора</a><br>
-    <a href = "{% url 'deflector' %}"> Реактор с отражателем</a><br>
+      {% for p in pracs %}
+      <a href="{%url 'practice:prac' p.practice.id%}">{{p.title}}</a><br>
+      {% endfor %}
   </div>
+
   <div class="column" style="background-color:#ccc;">
     <h2>Контроль</h2>
-    <p>Контроль для точечной кинетики</p>
+    <a href = "{% url 'ctrl' %}"> Ксенон</a><br>
+    <a href = "test.html"> Точечная кинетика</a><br>
+    <a href = "test.html"> Расчет реактора</a><br>
+    <a href = "test.html"> Реактор с отражателем</a><br>
   </div>
 </div>
 
 <table>
   <tr>
     {% if role != "user_def" %}
-      <td><a href="{% url 'create' %}"><button>Добавить запись</button></a><br></td>
+      <td><a href="{% url 'create' %}"><button>Изменить каталог</button></a><br></td>
     {% endif %}
     {% if role == 'admin' %}
       <td><a href="../admin"><button>Панель администратора</button></a><br></td>

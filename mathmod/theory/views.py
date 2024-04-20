@@ -4,10 +4,10 @@ from django.http import FileResponse
 from main.models import topic
 from mathmod import settings
 
-def topic_id(request, topic_id):
+def theory_id(request, theory_id):
     topic_list = topic.objects.raw(
         'SELECT id, theory FROM main_topic WHERE id = %s',
-        [topic_id, ])
+        [theory_id, ])
     if len(topic_list) == 0:
         context = {
             'title': 'Ошибка',

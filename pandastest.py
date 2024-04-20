@@ -6,12 +6,26 @@ from scipy.optimize import fsolve
 import os
 import matplotlib.pyplot as plt
 import plotly.express as px
+
+import views, admin, path, include
 d = 200
 h = 700/2
 M = 1/61
 
-def f(x):
-    return M*(1/np.tan(x*h))-x*np.tanh(d*M)
+urlpatterns = [
+    path('register', views.register, name='registration'),
+    path('', views.login, name='login'),
+    path('logout', views.user_logout, name='logout'),
+    path('main/', views.main),
+    path('admin/', admin.site.urls),
+    path('', views.start),
+    path('<int:theory_id>', views.theory_id, name = 'theory'),
+    path('<int:practice_id>', views.practice_id, name = 'practice'),
+    path('<int:control_id>', views.control_id, name = 'control'),
+]
+
+
+
 
 
 

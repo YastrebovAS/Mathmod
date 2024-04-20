@@ -5,7 +5,7 @@ from . import views
 
 app_name = 'theory'
 urlpatterns = [
-    path('<int:topic_id>', views.topic_id, name = 'theory')
+    path('<int:theory_id>', views.theory_id, name = 'theorylisting')
 ]
 
 

@@ -1,46 +1,62 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser,AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.contrib import admin
 from django.utils.timezone import now
+import random
 
 class practices(models.Model):
-    template = models.FileField('Шаблон', max_length=128)
-    practice = models.FileField('Файл с формулами', max_length=128)
+    template = models.FileField('Шаблон',upload_to='template', max_length=128)
+    practice = models.FileField('Файл с формулами', upload_to='execs', max_length=128)
     class Meta:
         verbose_name = 'Практика'
         verbose_name_plural = 'Практики'
 
-
-class options(models.Model):
-    option = models.CharField('Вариант ответа', max_length=128, unique=True)
-    def __str__(self):
-        return self.option
-    class Meta:
-        verbose_name = 'Вариант'
-        verbose_name_plural = 'Варианты'
-
-class questions(models.Model):
-    question = models.CharField('Вопрос', max_length=128)
-    answer = models.TextField('Ответ', max_length=128)
-    options = models.ForeignKey(to = options, related_name='q_opt',  on_delete=models.CASCADE,)
-    def __str__(self):
-        return self.question
-    class Meta:
-        verbose_name = 'Вопрос'
-        verbose_name_plural = 'Вопросы'
-
 class topic(models.Model):
     title = models.CharField('Заголовок', max_length=128, unique=True)
     theory = models.FileField('Теория',upload_to='theory', null=True)
-    practice = models.IntegerField('Практика')
-    control = models.IntegerField('Контроль')
-    '''practice = models.ForeignKey(to = practices, related_name='prac_part', on_delete=models.CASCADE)
-    control = models.ForeignKey(to =  questions, related_name='cont_part', on_delete=models.CASCADE)'''
+    #practice = models.IntegerField('Практика')
+    practice = models.ForeignKey(to=practices, related_name='prac_part', on_delete=models.CASCADE)
     def __str__(self):
         return self.title
     class Meta:
         verbose_name = 'Тема'
         verbose_name_plural = 'Темы'
+
+class questions(models.Model):
+    topic_test = models.ForeignKey(to=topic, related_name='control_part', on_delete=models.CASCADE)
+    question = models.CharField( verbose_name='Вопрос', max_length=128)
+    marks = models.IntegerField('Оценка',default = 10)
+    def __str__(self):
+        return self.question
+
+    def get_answers(self):
+        answer_objs = list(Answer.objects.filter(question=self))
+        data = []
+        random.shuffle(answer_objs)
+
+        for answer_obj in answer_objs:
+            data.append({
+                'answer': answer_obj.answer,
+                'is_correct': answer_obj.is_correct
+            })
+        return data
+    class Meta:
+        verbose_name = 'Вопрос'
+        verbose_name_plural = 'Вопросы'
+
+class Answer(models.Model):
+    question = models.ForeignKey(to = questions,related_name='question_for_answer',  on_delete =models.CASCADE)
+    answer = models.CharField('Вариант ответа', max_length=128, unique=True)
+    is_correct = models.BooleanField(verbose_name='Правильный ответ', default=False)
+    def __str__(self):
+        return self.answer
+    class Meta:
+        verbose_name = 'Вариант'
+        verbose_name_plural = 'Варианты'
+
+
+
+
 
 
 
