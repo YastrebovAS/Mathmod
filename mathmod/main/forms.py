@@ -42,9 +42,8 @@ class questionsForm(ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Введите вопрос'
             }),
-            "practice": NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Баллы за правильный ответ'
+            "marks": NumberInput(attrs={
+                'class': 'form-control'
         })
         }
 class answerForm(ModelForm):

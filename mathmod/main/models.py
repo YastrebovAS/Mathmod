@@ -58,9 +58,6 @@ class Answer(models.Model):
 
 
 
-
-
-
 class User(AbstractUser):
     USER = 'user_def'
     ADMIN = 'admin'

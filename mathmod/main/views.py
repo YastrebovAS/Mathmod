@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.forms import formset_factory
-from .models import topic, practices
+from .models import topic, practices,questions,Answer
 from .forms import topicForm,practicesForm,questionsForm, answerForm
 # Create your views here.
 
@@ -18,24 +18,27 @@ def menu(request):
 
 def prac_creat(request):
     error = ''
-    questionformset = formset_factory(questionsForm, extra=3)
-    answerformset = formset_factory(answerForm, extra=2)
+    questionformset = formset_factory(questionsForm)
+    answerformset = formset_factory(answerForm)
     if request.method == 'POST':
         form = topicForm(request.POST, request.FILES)
         prac_form = practicesForm(request.POST, request.FILES)
         control = questionformset(request.POST)
         ques_options = answerformset(request.POST)
-        if prac_form.is_valid() and form.is_valid():
-            #if control.is_valid():
+        print(request.POST)
+        if prac_form.is_valid() and form.is_valid() and control.is_valid():
             newprac = practices(template = request.FILES['template'],
                              practice = request.FILES['practice'])
             newprac.save()
             newtopic = topic(theory=request.FILES['theory'], title=request.POST['title'],
-                                 practice = newprac, control=request.POST['control'])
+                                 practice = newprac)
             newtopic.save()
+            for i in range(len(control)):
+                newques = questions(topic_test = newtopic, question = request.POST[f'form-{i}-question'],marks = request.POST[f'form-{i}-marks'])
+                newques.save()
             return redirect('menu')
         else:
-            error = "Тема не была загружена"
+            error = "Что-то пошло не так"
 
     else:
         form = topicForm()

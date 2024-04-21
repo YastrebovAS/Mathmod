@@ -4,7 +4,14 @@
 Добавление темы
 {% endblock %}
 
-
+{% block head %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<style>
+    .hidden{
+    display: none
+    }
+</style>
+{% endblock %}
 
 
 {% block content %}
@@ -18,15 +25,64 @@
             Теория: {{ form.theory }}<br>
             Шаблон: {{ prac_form.template }}<br>
             Практика:{{ prac_form.practice }}<br>
-            Тест:<br>
-            {% for form in control %}
-            {{ form }}<br>
-            {% for option in options %}
-            {{ option }} <br>
-            {% endfor %}
-            {% endfor %}
+            <br>
+            {% if control %}
+            {{control.management_form}}
+            <h2>Вопросы для теста</h2>
+            <div id = "question-form-list">
+                {% for form in control %}
+                <div class="question-form">
+                    {{form.as_p}}
+                    <div id = "option-form-list">
+                         {% comment %}
+                        {% for option in options %}
+                        <div class = "option-form">
+                            {{option.as_p}}
+                        </div>
+                        {% endfor %}
+                        <button id = "add-option" type = "button">Добавить вариант ответа</button>
+                         {% endcomment %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id = "empty-qurstion-form" class = "hidden">{{control.empty_form.as_p}}</div>
+            <div id = "empty-answer-form" class = "hidden">{{options.empty_form.as_p}}</div>
+            <button id = "add-question" type = "button">Добавить вопрос</button>
+            {% endif %}
             <button type="submit">Создать запись</button><br>
             <span>{{ error }} </span>
       </form>
 </div>
+
+<script>
+    const addQuestion = document.getElementById("add-question")
+    const totalNewQuestions = document.getElementById("id_form-TOTAL_FORMS")
+
+    //const addOption = document.getElementById("add-option")
+
+    addQuestion.addEventListener("click", add_new_quest)
+    //addOption.addEventListener("click", add_new_opt)
+
+    function add_new_quest(event) {
+        if (event){
+            event.preventDefault()
+        }
+        const currentQuestionForms = document.getElementsByClassName('question-form')
+        const currentQUesCount = currentQuestionForms.length
+
+        const questionCopyTarget = document.getElementById("question-form-list")
+        const copyEmptyQuestionForm = document.getElementById("empty-qurstion-form").cloneNode(true)
+
+        copyEmptyQuestionForm.setAttribute("class", "question-form")
+        copyEmptyQuestionForm.setAttribute("id", `form-${currentQUesCount}-question`)
+        const regexQues = new RegExp('__prefix__', 'g')
+        copyEmptyQuestionForm.innerHTML = copyEmptyQuestionForm.innerHTML.replace(regexQues,currentQUesCount)
+        totalNewQuestions.setAttribute("value", currentQUesCount+1)
+
+        questionCopyTarget.append(copyEmptyQuestionForm)
+    }
+
+</script>
+
 {% endblock %}
