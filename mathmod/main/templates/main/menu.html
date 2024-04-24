@@ -34,7 +34,7 @@
 
 
 <h2>Меню</h2>
- <a href="{% url 'logout' %}"><button>Выйти из системы</button><a><br>
+ <a href="{% url 'logout' %}"><button>Выйти из системы</button></a><br>
 <div class="row">
   <div class="column" style="background-color:#aaa;">
     <h2>Теория</h2>
@@ -52,10 +52,9 @@
 
   <div class="column" style="background-color:#ccc;">
     <h2>Контроль</h2>
-    <a href = "{% url 'ctrl' %}"> Ксенон</a><br>
-    <a href = "test.html"> Точечная кинетика</a><br>
-    <a href = "test.html"> Расчет реактора</a><br>
-    <a href = "test.html"> Реактор с отражателем</a><br>
+      {% for c in conts %}
+        <a href="{%url 'control:ctrllist' c.id%}"> {{c.title}} </a><br>
+      {% endfor %}
   </div>
 </div>
 
@@ -66,6 +65,9 @@
     {% endif %}
     {% if role == 'admin' %}
       <td><a href="../admin"><button>Панель администратора</button></a><br></td>
+    {% endif %}
+    {% if role == 'admin' %}
+      <td><a href="{% url 'resultlist' %}"><button>Результаты тестирования</button></a><br></td>
     {% endif %}
   </tr>
 </table>

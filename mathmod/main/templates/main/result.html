@@ -1,0 +1,28 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Результат теста
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+<div class = 'features' align="left">
+    <a href = "{% url 'menu' %}"> На главную</a><br>
+
+    <h1>Результат теста:</h1>
+    {%for part in request.session.restest %}
+        Вопрос: {{part.0}}<br>
+        Ответ: {{part.1}}<br>
+        {% if part.2 == True %}
+        Статус: Правильно
+        {% else %}
+        Статус: Неправильно
+        {% endif %}
+    <br><br>
+    {% endfor %}
+</div>
+{% endblock %}

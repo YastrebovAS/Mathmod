@@ -46,18 +46,3 @@ class questionsForm(ModelForm):
                 'class': 'form-control'
         })
         }
-class answerForm(ModelForm):
-    class Meta:
-        model = Answer
-        fields = ['answer','is_correct']
-        widgets = {
-            "answer": TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Введите вариант ответа'
-            }),
-            "is_correct": NullBooleanSelect(attrs={
-                'class': 'form-control',
-                'placeholder': 'Правильный ответ или нет'
-            })
-        }
-

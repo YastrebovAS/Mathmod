@@ -1,0 +1,24 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Результаты тестов
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+<div class = 'results' align="left">
+    <a href = "{% url 'menu' %}"> На главную</a><br>
+    <h1>Результаты тестов</h1>
+        {% for result in results %}
+            Студент: {{result.student.last_name}} {{result.student.first_name}} {{result.student.patronymic}}<br>
+            Тема: {{result.theme}}<br>
+            Оценка: {{result.grade}} %<br>
+    <br>
+
+        {% endfor %}
+</div>
+{% endblock %}

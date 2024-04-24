@@ -25,6 +25,7 @@ class topic(models.Model):
 class questions(models.Model):
     topic_test = models.ForeignKey(to=topic, related_name='control_part', on_delete=models.CASCADE)
     question = models.CharField( verbose_name='Вопрос', max_length=128)
+    picture = models.ImageField('Изображение', upload_to='question_image', null=True)
     marks = models.IntegerField('Оценка',default = 10)
     def __str__(self):
         return self.question
@@ -46,7 +47,7 @@ class questions(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey(to = questions,related_name='question_for_answer',  on_delete =models.CASCADE)
-    answer = models.CharField('Вариант ответа', max_length=128, unique=True)
+    answer = models.CharField('Вариант ответа', max_length=128)
     is_correct = models.BooleanField(verbose_name='Правильный ответ', default=False)
     def __str__(self):
         return self.answer
@@ -80,9 +81,11 @@ class results(models.Model):
     class Meta:
         verbose_name = 'Оценка'
         verbose_name_plural = 'Оценки'
+
+
 class changelogs(models.Model):
     topic = models.ForeignKey(to = topic,related_name='theme_changelg',  on_delete=models.CASCADE)
-    redactor = models.ForeignKey(to=User, related_name='user_changelg',  on_delete=models.CASCADE,)
+    redactor = models.ForeignKey(to=User, related_name='user_changelg',  on_delete=models.CASCADE)
     date = models.DateField('Дата редактирования')
     changes = models.TextField('Описание изменений')
     class Meta:

@@ -33,41 +33,75 @@
                 {% for form in control %}
                 <div class="question-form">
                     {{form.as_p}}
-                    <div id = "option-form-list">
-                         {% comment %}
+                    {{options.management_form}}
+                    <div id = "option-list-form">
                         {% for option in options %}
                         <div class = "option-form">
                             {{option.as_p}}
                         </div>
                         {% endfor %}
                         <button id = "add-option" type = "button">Добавить вариант ответа</button>
-                         {% endcomment %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            <div id = "empty-qurstion-form" class = "hidden">{{control.empty_form.as_p}}</div>
-            <div id = "empty-answer-form" class = "hidden">{{options.empty_form.as_p}}</div>
+            <div id = "empty-qurstion-form" class = "hidden">{{control.empty_form.as_p}}
+            <div id = "option-list-form-__prefix__" class = "hidden">
+                <button id = "add-option-__prefix__" class ='hidden' type = "button">Добавить вариант ответа</button>
+            </div>
+            </div>
+            <div id = "empty-answer-form" class = "hidden">
+                <p>
+                <label for="id_form-__prefix__-answer">Вариант ответа:</label>
+    <input type="text" name="form-__prefix__-answer" class="form-control" placeholder="Введите вариант ответа" maxlength="128" id="id_form-__prefix__-answer">
+
+
+  </p>
+
+
+  <p>
+    <label for="id_form-__prefix__-is_correct">Правильный ответ:</label>
+    <select name="form-__prefix__-is_correct" class="form-control" placeholder="Правильный ответ или нет" id="id_form-__prefix__-is_correct">
+  <!--<option value="unknown">Неизвестно</option>-->
+
+  <option value="true">Да</option>
+
+  <option value="false" selected="">Нет</option>
+
+</select>
+
+
+
+
+  </p>
+            </div>
             <button id = "add-question" type = "button">Добавить вопрос</button>
             {% endif %}
+            <br>
             <button type="submit">Создать запись</button><br>
             <span>{{ error }} </span>
       </form>
 </div>
 
+{% comment %}
+
+
+
+{% endcomment %}
+
 <script>
     const addQuestion = document.getElementById("add-question")
     const totalNewQuestions = document.getElementById("id_form-TOTAL_FORMS")
 
-    //const addOption = document.getElementById("add-option")
-
     addQuestion.addEventListener("click", add_new_quest)
-    //addOption.addEventListener("click", add_new_opt)
+
+
 
     function add_new_quest(event) {
         if (event){
             event.preventDefault()
         }
+
         const currentQuestionForms = document.getElementsByClassName('question-form')
         const currentQUesCount = currentQuestionForms.length
 
@@ -76,12 +110,55 @@
 
         copyEmptyQuestionForm.setAttribute("class", "question-form")
         copyEmptyQuestionForm.setAttribute("id", `form-${currentQUesCount}-question`)
+        currentOptionList = copyEmptyQuestionForm.childNodes[4]
+        currentOptionList.setAttribute("class", "option-list-form")
+        currentOptionAdd = currentOptionList.childNodes[1]
+        currentOptionAdd.setAttribute("class", "add-option")
         const regexQues = new RegExp('__prefix__', 'g')
         copyEmptyQuestionForm.innerHTML = copyEmptyQuestionForm.innerHTML.replace(regexQues,currentQUesCount)
+
         totalNewQuestions.setAttribute("value", currentQUesCount+1)
 
         questionCopyTarget.append(copyEmptyQuestionForm)
+
+
+        var currentAnswerLists = document.getElementsByClassName('option-list-form')
+        for (i=0; i<currentAnswerLists.length; i++){
+            var cur_id = currentAnswerLists[i].id.substr(currentAnswerLists[i].id.length - 1);
+            var addOption = document.getElementById(`add-option-${cur_id}`);
+            addOption.addEventListener("click", add_new_answer);
+            }
+
+
     }
+
+
+
+    function add_new_answer(event){
+
+       var current_id = event.currentTarget.id.substr(event.currentTarget.id.length - 1)
+
+       const currentQuesForm = document.getElementById(`form-${current_id}-question`)
+       const currentOptForms = currentQuesForm.getElementsByClassName("option-form")
+       const currentOptCount = currentOptForms.length
+
+
+       const optionCopyTarget = document.getElementById(`option-list-form-${current_id}`)
+       const copyEmptyOptionForm = document.getElementById("empty-answer-form").cloneNode(true)
+       copyEmptyOptionForm.setAttribute("class", "option-form")
+       copyEmptyOptionForm.setAttribute("id", `option-form-${current_id}-${currentOptCount}`)
+       const regexOpt = new RegExp('__prefix__', 'g')
+       copyEmptyOptionForm.innerHTML = copyEmptyOptionForm.innerHTML.replace(regexOpt,`${current_id}-${currentOptCount}`)
+
+
+
+        optionCopyTarget.append(copyEmptyOptionForm)
+    }
+
+
+
+
+
 
 </script>
 
