@@ -6,9 +6,9 @@ from .forms import topicForm,practicesForm,questionsForm
 
 
 def menu(request):
-    theory = topic.objects.raw('SELECT id, title, theory from main_topic')
-    practicesids = topic.objects.select_related('practice')
-    controls = topic.objects.raw('SELECT id, title from main_topic')
+    theory = topic.objects.all()
+    practicesids = practices.objects.select_related('topic_prac')
+    controls = topic.objects.all()
     perms = request.user.role
     context = {
         'titles': theory,
@@ -30,12 +30,13 @@ def prac_creat(request):
         control = questionformset(request.POST, request.FILES)
 
         if prac_form.is_valid() and form.is_valid() and control.is_valid():
-            newprac = practices(template = request.FILES['template'],
+            newtopic = topic(theory=request.FILES['theory'], title=request.POST['title'],
+                             )
+            newtopic.save()
+            newprac = practices(topic_prac = newtopic, template = request.FILES['template'],
                              practice = request.FILES['practice'])
             newprac.save()
-            newtopic = topic(theory=request.FILES['theory'], title=request.POST['title'],
-                                 practice = newprac)
-            newtopic.save()
+
             for i in range(len(control)):
                 if f'form-{i}-picture' in request.FILES.keys():
                     quesim = request.FILES[f'form-{i}-picture']
@@ -91,8 +92,8 @@ def practice_report_list(request):
     all_reports = PracticeReport.objects.select_related('practice')
     titles = []
     for report in all_reports:
-        report_theme = topic.objects.select_related('practice').filter(practice_id = report.practice_id)
-        titles.append(report_theme[0].title)
+        report_theme = practices.objects.select_related('topic_prac').filter(id = report.practice_id)
+        titles.append(report_theme[0].topic_prac.title)
     return render(request, 'main/reportlist.html',{'reports': all_reports, "titles":titles})
 
 def practice_report(request, report_id):

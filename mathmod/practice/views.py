@@ -27,8 +27,8 @@ def practice_id(request, practice_id):
     imported_function = getattr(imported_module,'func')
     context = imported_function(request)
     if isinstance(request.session['journey'],list) and context == {}:
-        title = topic.objects.select_related('practice').filter(practice_id = practice_id)[0]
-        request.session['journey'] = request.session['journey'] + [(f'Посетил практику темы "{title.title}"')]
+        title = practices.objects.select_related('topic_prac').filter(id=practice_id)[0]
+        request.session['journey'] = request.session['journey'] + [(f'Посетил практику темы "{title.topic_prac.title}"')]
 
 
     if context != {}:
@@ -38,8 +38,8 @@ def practice_id(request, practice_id):
         new_prac_report = PracticeReport(student = cureent_user, practice = cureent_practice, report = test, date = datetime.now())
         new_prac_report.save()
         if isinstance(request.session['journey'], list):
-            title = topic.objects.select_related('practice').filter(practice_id=practice_id)[0]
-            request.session['journey'] = request.session['journey'] + [(f'Получил ответ по практике темы "{title.title}" (Дата и время: {datetime.now()})')]
+            title = practices.objects.select_related('topic_prac').filter(id=practice_id)[0]
+            request.session['journey'] = request.session['journey'] + [(f'Получил ответ по практике темы "{title.topic_prac.title}" (Дата и время: {datetime.now()})')]
     return  render(request, template_name=plate, context=context)
 
 def experiment(request):

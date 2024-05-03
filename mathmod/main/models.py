@@ -6,22 +6,24 @@ from django.contrib.sessions.models import Session
 from django.db.models.signals import pre_delete
 import random
 
-class practices(models.Model):
-    template = models.FileField('Шаблон',upload_to='template', max_length=128)
-    practice = models.FileField('Файл с формулами', upload_to='execs', max_length=128)
-    class Meta:
-        verbose_name = 'Практика'
-        verbose_name_plural = 'Практики'
+
 
 class topic(models.Model):
     title = models.CharField('Заголовок', max_length=128, unique=True)
     theory = models.FileField('Теория',upload_to='theory', null=True)
-    practice = models.ForeignKey(to=practices, related_name='prac_part', on_delete=models.CASCADE)
     def __str__(self):
         return self.title
     class Meta:
         verbose_name = 'Тема'
         verbose_name_plural = 'Темы'
+
+class practices(models.Model):
+    topic_prac = models.ForeignKey(verbose_name="Вопрос",to=topic, related_name='practice_part', on_delete=models.CASCADE)
+    template = models.FileField('Шаблон',upload_to='template', max_length=128)
+    practice = models.FileField('Файл с формулами', upload_to='execs', max_length=128)
+    class Meta:
+        verbose_name = 'Практика'
+        verbose_name_plural = 'Практики'
 
 class questions(models.Model):
     topic_test = models.ForeignKey(to=topic, related_name='control_part', on_delete=models.CASCADE)

@@ -46,7 +46,7 @@
   <div class="column" style="background-color:#bbb;">
     <h2>Практика</h2>
       {% for p in pracs %}
-      <a href="{%url 'practice:prac' p.practice.id%}">{{p.title}}</a><br>
+      <a href="{%url 'practice:prac' p.id%}">{{p.topic_prac.title}}</a><br>
       {% endfor %}
   </div>
 
