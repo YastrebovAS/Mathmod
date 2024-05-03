@@ -1,7 +1,7 @@
 {% extends 'main/layout.html' %}
 
 {% block title %}
-Добавление темы
+Изменение каталога тем
 {% endblock %}
 
 {% block head %}
@@ -15,12 +15,26 @@
 
 
 {% block content %}
+{% csrf_token %}
 
+<div class = 'adder' align="left">
+    <a href = "{% url 'menu' %}"> На главную</a><br>
+    <table style="width:100%">
+        <tr>
+            <th>
+                <h2>Загрузка темы </h2>
+            </th>
+            <th>
+                <h2>Редактирование существующей темы </h2>
+            </th>
+            <th>
+                <h21>Удаление темы </h21>
+            </th>
+        </tr>
+        <tr>
+            <td>
+            <form method="post" data-ajax="false" enctype= multipart/form-data>
 
-<div class = 'features' align="left">
-    <h1>Форма для создания записи </h1>
-        <form method="post" data-ajax="false" enctype= multipart/form-data>
-            {% csrf_token %}
             Тема: {{ form.title }}<br>
             Теория: {{ form.theory }}<br>
             Шаблон: {{ prac_form.template }}<br>
@@ -33,15 +47,6 @@
                 {% for form in control %}
                 <div class="question-form">
                     {{form.as_p}}
-                    {{options.management_form}}
-                    <div id = "option-list-form">
-                        {% for option in options %}
-                        <div class = "option-form">
-                            {{option.as_p}}
-                        </div>
-                        {% endfor %}
-                        <button id = "add-option" type = "button">Добавить вариант ответа</button>
-                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -53,41 +58,44 @@
             <div id = "empty-answer-form" class = "hidden">
                 <p>
                 <label for="id_form-__prefix__-answer">Вариант ответа:</label>
-    <input type="text" name="form-__prefix__-answer" class="form-control" placeholder="Введите вариант ответа" maxlength="128" id="id_form-__prefix__-answer">
+        <input type="text" name="form-__prefix__-answer" class="form-Answer" placeholder="Введите вариант ответа" maxlength="128" id="id_form-__prefix__-answer">
+      </p>
+        <p>
+        <label for="id_form-__prefix__-picture">Изображение:</label>
+        <input type="file" name="form-__prefix__-picture" class="form-Answer" id="id_form-__prefix__-picture" accept="image/*">
+
+        </p>
+      <p>
+        <label for="id_form-__prefix__-is_correct">Правильный ответ:</label>
+        <select name="form-__prefix__-is_correct" class="form-Answer" placeholder="Правильный ответ или нет" id="id_form-__prefix__-is_correct">
+      <!--<option value="unknown">Неизвестно</option>-->
+
+      <option value="true">Да</option>
+
+      <option value="false" selected="">Нет</option>
+
+        </select>
 
 
-  </p>
-
-
-  <p>
-    <label for="id_form-__prefix__-is_correct">Правильный ответ:</label>
-    <select name="form-__prefix__-is_correct" class="form-control" placeholder="Правильный ответ или нет" id="id_form-__prefix__-is_correct">
-  <!--<option value="unknown">Неизвестно</option>-->
-
-  <option value="true">Да</option>
-
-  <option value="false" selected="">Нет</option>
-
-</select>
-
-
-
-
-  </p>
-            </div>
-            <button id = "add-question" type = "button">Добавить вопрос</button>
+      </p>
+        </div>
             {% endif %}
+            <button id = "add-question" type = "button">Добавить вопрос</button>
+
             <br>
             <button type="submit">Создать запись</button><br>
             <span>{{ error }} </span>
       </form>
-</div>
 
-{% comment %}
+            </td>
+            <td>
+
+            </td>
+        </tr>
+    </table>
+    </div>
 
 
-
-{% endcomment %}
 
 <script>
     const addQuestion = document.getElementById("add-question")
@@ -110,7 +118,8 @@
 
         copyEmptyQuestionForm.setAttribute("class", "question-form")
         copyEmptyQuestionForm.setAttribute("id", `form-${currentQUesCount}-question`)
-        currentOptionList = copyEmptyQuestionForm.childNodes[4]
+
+        currentOptionList = copyEmptyQuestionForm.childNodes[6]
         currentOptionList.setAttribute("class", "option-list-form")
         currentOptionAdd = currentOptionList.childNodes[1]
         currentOptionAdd.setAttribute("class", "add-option")
@@ -148,6 +157,7 @@
        copyEmptyOptionForm.setAttribute("class", "option-form")
        copyEmptyOptionForm.setAttribute("id", `option-form-${current_id}-${currentOptCount}`)
        const regexOpt = new RegExp('__prefix__', 'g')
+
        copyEmptyOptionForm.innerHTML = copyEmptyOptionForm.innerHTML.replace(regexOpt,`${current_id}-${currentOptCount}`)
 
 

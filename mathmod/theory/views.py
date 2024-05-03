@@ -6,7 +6,7 @@ from mathmod import settings
 
 def theory_id(request, theory_id):
     topic_list = topic.objects.raw(
-        'SELECT id, theory FROM main_topic WHERE id = %s',
+        'SELECT id, title, theory FROM main_topic WHERE id = %s',
         [theory_id, ])
     if len(topic_list) == 0:
         context = {
@@ -18,7 +18,10 @@ def theory_id(request, theory_id):
     topic_list_x = []
     for elem in topic_list:
         e = elem.__dict__
-        topic_list_x.append((e['id'], e['theory']))
-    path = topic_list_x[0][1]
+        topic_list_x.append((e['id'], e['title'], e['theory']))
+    title = topic_list_x[0][1]
+    path = topic_list_x[0][2]
     filepath = os.path.join(settings.MEDIA_ROOT + '/' + path)
+    if isinstance(request.session['journey'],list):
+        request.session['journey'] = request.session['journey'] + [(f'Посетил теорию темы "{title}"')]
     return FileResponse(open(filepath, 'rb'), content_type='application/pdf')

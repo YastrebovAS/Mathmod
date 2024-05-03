@@ -36,11 +36,15 @@ class practicesForm(ModelForm):
 class questionsForm(ModelForm):
     class Meta:
         model = questions
-        fields = ['question','marks']
+        fields = ['question','picture','marks']
         widgets = {
             "question": TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите вопрос'
+            }),
+            'picture':FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
             }),
             "marks": NumberInput(attrs={
                 'class': 'form-control'

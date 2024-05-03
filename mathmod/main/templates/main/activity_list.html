@@ -1,0 +1,35 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Отслеживание активности
+{% endblock %}
+
+
+
+
+{% block content %}
+{% load index %}
+
+
+
+<div class = 'results' align="left">
+    <a href = "{% url 'menu' %}"> На главную</a><br>
+    <h1>Активность пользователей</h1>
+    {% for activity in activities %}
+    Студент: {{activity.user.last_name}} {{activity.user.first_name}} {{activity.user.patronymic}}<br>
+    Дата и время: {{activity.datetime }}<br>
+    Активность: <br>
+    {% with x=forloop.counter0 %} {% for activity_list in activity_lists|index:x%}
+    {% if activity_list.1 == 0 %}
+    &emsp;&emsp;{{activity_list.0}}<br>
+    {% else %}
+    &emsp;&emsp;<a href = "{%url 'single_report' activity_list.1%}"> {{activity_list.0}}</a><br>
+    {% endif%}
+    {% endfor %}
+    {% endwith %}
+    <br>
+
+    <br>
+    {% endfor %}
+</div>
+{% endblock %}

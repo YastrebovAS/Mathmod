@@ -69,6 +69,12 @@
     {% if role == 'admin' %}
       <td><a href="{% url 'resultlist' %}"><button>Результаты тестирования</button></a><br></td>
     {% endif %}
+    {% if role == 'admin' %}
+      <td><a href="{% url 'reportlist' %}"><button>Результаты практики</button></a><br></td>
+    {% endif %}
+    {% if role == 'admin' %}
+      <td><a href="{% url 'activity_list' %}"><button>Отслеживание активности</button></a><br></td>
+    {% endif %}
   </tr>
 </table>
 

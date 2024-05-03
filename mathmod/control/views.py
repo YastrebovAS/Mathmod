@@ -21,7 +21,7 @@ def control_id(request, control_id):
     context = {
         'title': title.title,
         'questions': ctrl_list,
-        'answers': ques_array
+        'answers': ques_array,
     }
     if request.method == 'POST':
         restest = []
@@ -59,9 +59,12 @@ def control_id(request, control_id):
         newres = results(theme = title, student = current_user, grade = grade)
         newres.save()
         request.session['restest'] = restest
+        if isinstance(request.session['journey'], list):
+            request.session['journey'] = request.session['journey'] + [(f'Прошел тест темы "{title.title}"(Оценка:{actual_points}/{max_points})')]
         return redirect('control:testresult', control_id = control_id)
 
-
+    if isinstance(request.session['journey'],list):
+        request.session['journey'] = request.session['journey'] + [(f'Посетил тест темы "{title.title}"')]
 
     return  render(request,'main/control.html',context)
 

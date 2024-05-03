@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib import admin
 from django.utils.timezone import now
+from django.contrib.sessions.models import Session
+from django.db.models.signals import pre_delete
 import random
 
 class practices(models.Model):
@@ -14,7 +16,6 @@ class practices(models.Model):
 class topic(models.Model):
     title = models.CharField('Заголовок', max_length=128, unique=True)
     theory = models.FileField('Теория',upload_to='theory', null=True)
-    #practice = models.IntegerField('Практика')
     practice = models.ForeignKey(to=practices, related_name='prac_part', on_delete=models.CASCADE)
     def __str__(self):
         return self.title
@@ -25,7 +26,7 @@ class topic(models.Model):
 class questions(models.Model):
     topic_test = models.ForeignKey(to=topic, related_name='control_part', on_delete=models.CASCADE)
     question = models.CharField( verbose_name='Вопрос', max_length=128)
-    picture = models.ImageField('Изображение', upload_to='question_image', null=True)
+    picture = models.ImageField('Изображение', upload_to='question_image', blank=True)
     marks = models.IntegerField('Оценка',default = 10)
     def __str__(self):
         return self.question
@@ -38,6 +39,7 @@ class questions(models.Model):
         for answer_obj in answer_objs:
             data.append({
                 'answer': answer_obj.answer,
+                'image': answer_obj.image,
                 'is_correct': answer_obj.is_correct
             })
         return data
@@ -47,6 +49,7 @@ class questions(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey(to = questions,related_name='question_for_answer',  on_delete =models.CASCADE)
+    image = models.ImageField('Изображение', upload_to='answer_image', blank=True)
     answer = models.CharField('Вариант ответа', max_length=128)
     is_correct = models.BooleanField(verbose_name='Правильный ответ', default=False)
     def __str__(self):
@@ -74,6 +77,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
 class results(models.Model):
     theme = models.ForeignKey(to=topic, related_name='theme_res', on_delete=models.CASCADE,)
     student = models.ForeignKey(to=User, related_name='user_res', on_delete=models.CASCADE,)
@@ -81,6 +85,33 @@ class results(models.Model):
     class Meta:
         verbose_name = 'Оценка'
         verbose_name_plural = 'Оценки'
+
+
+class PracticeReport(models.Model):
+    practice = models.ForeignKey(to=practices, related_name='where_from_practice', on_delete=models.CASCADE, )
+    student = models.ForeignKey(to=User, related_name='who_from_practice', on_delete=models.CASCADE, )
+    report = models.TextField(verbose_name='HTML результата')
+    date = models.DateTimeField(verbose_name='Дата и время')
+
+    class Meta:
+        verbose_name = 'Отчеты практики'
+        verbose_name_plural = 'Отчет практики'
+
+class SessionAdmin(admin.ModelAdmin):
+    def _session_data(self, obj):
+        return obj.get_decoded()
+
+    list_display = ['session_key', '_session_data', 'expire_date']
+
+
+class Activity(models.Model):
+    user = models.ForeignKey(to=User, related_name='whose_activity', on_delete=models.CASCADE, )
+    datetime = models.DateTimeField(verbose_name='Дата и время')
+    activity = models.TextField(verbose_name='Перечень посещенных страниц')
+
+    class Meta:
+        verbose_name = 'Активность студента'
+        verbose_name_plural = 'Отслеживание активности студентов'
 
 
 class changelogs(models.Model):
@@ -91,3 +122,4 @@ class changelogs(models.Model):
     class Meta:
         verbose_name = 'Редактирование сайта'
         verbose_name_plural = 'Логи редактирования сайта'
+

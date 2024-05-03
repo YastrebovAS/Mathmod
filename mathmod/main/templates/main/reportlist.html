@@ -1,0 +1,26 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+Результаты практической части
+{% endblock %}
+
+
+
+
+{% block content %}
+{% load index %}
+
+
+
+<div class = 'results' align="left">
+    <a href = "{% url 'menu' %}"> На главную</a><br>
+    <h1>Отчеты по практике</h1>
+    {% for report in reports %}
+    Студент: {{report.student.last_name}} {{report.student.first_name}} {{report.student.patronymic}}<br>
+    Тема практики: {% with x=forloop.counter0 %} {{titles|index:x}} {% endwith %}<br>
+    Результат: <a href = "{%url 'single_report' report.id%}"> Отчет</a><br>
+    Дата и время: {{report.date }}<br>
+    <br>
+    {% endfor %}
+</div>
+{% endblock %}
