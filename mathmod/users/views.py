@@ -28,9 +28,6 @@ def register(request):
     return render(request,'users/register.html',data)
 
 def login(request):
-    if dict(request.session) == {}:
-        request.session['journey'] = []
-    print(dict(request.session))
     error = ''
     if request.method == "POST":
         authform = LoginForm(data = request.POST)
@@ -53,8 +50,5 @@ def login(request):
     }
     return render(request,'users/login.html',data)
 def user_logout(request):
-    leaving_user = User.objects.filter(username = request.user)[0]
-    newactivity = Activity(user = leaving_user, datetime = datetime.now(), activity = request.session['journey'])
-    newactivity.save()
     auth.logout(request)
     return redirect('login')

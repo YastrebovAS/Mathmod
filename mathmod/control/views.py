@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from main.models import questions,topic,results,User
+from main.models import questions,topic,results,User, Activity
+from datetime import datetime
 
 def control_id(request, control_id):
     request.session['restest'] = None
+
     title = topic.objects.filter(id = control_id)[0]
     ctrl_list = questions.objects.filter(topic_test=control_id)
+    current_user = User.objects.get(id=request.user.id)
+
     ques_array = []
     for c in ctrl_list:
         ques_array.append(c.get_answers())
@@ -54,20 +58,21 @@ def control_id(request, control_id):
 
         grade = float(actual_points/max_points)*100
 
-        current_user = User.objects.filter(id = request.user.id)[0]
+        current_user = User.objects.get(id = request.user.id)
 
         newres = results(theme = title, student = current_user, grade = grade)
         newres.save()
         request.session['restest'] = restest
-        if isinstance(request.session['journey'], list):
-            request.session['journey'] = request.session['journey'] + [(f'Прошел тест темы "{title.title}"(Оценка:{actual_points}/{max_points})')]
+        newactivity = Activity(user=current_user, datetime=datetime.now(),
+                               activity=f'Прошел тест темы "{title.title}"(Оценка:{actual_points}/{max_points})')
+        newactivity.save()
         return redirect('control:testresult', control_id = control_id)
+    else:
+        newactivity = Activity(user=current_user, datetime=datetime.now(), activity= f'Посетил тест темы "{title.title}"')
+        newactivity.save()
 
-    if isinstance(request.session['journey'],list):
-        request.session['journey'] = request.session['journey'] + [(f'Посетил тест темы "{title.title}"')]
 
     return  render(request,'main/control.html',context)
 
 def result(request, control_id):
-    title = topic.objects.filter(id=control_id)[0]
     return render(request, 'main/result.html')

@@ -20,17 +20,12 @@ class topicForm(ModelForm):
 class practicesForm(ModelForm):
     class Meta:
         model = practices
-        fields = ['template','practice']
+        fields = ['practice']
         widgets = {
-            "template": FileInput(attrs={
-                'class': 'form-control',
-                'label': 'Select a file',
-                'accept': '.html'
-            }),
             "practice": FileInput(attrs={
                 'class': 'form-control',
                 'label': 'Select a file',
-                'accept': '.py'
+                'accept': '.xlsx,.xlsm'
         })
         }
 class questionsForm(ModelForm):

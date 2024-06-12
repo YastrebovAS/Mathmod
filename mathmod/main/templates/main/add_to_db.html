@@ -15,34 +15,32 @@
 
 
 {% block content %}
-{% csrf_token %}
-
 <div class = 'adder' align="left">
     <a href = "{% url 'menu' %}"> На главную</a><br>
     <table style="width:100%">
         <tr>
-            <th>
-                <h2>Загрузка темы </h2>
+            <th align="left">
+                <h2>Создание темы </h2>
             </th>
-            <th>
-                <h2>Редактирование существующей темы </h2>
+            <th align="left">
+                <h2>Редактирование темы </h2>
             </th>
-            <th>
-                <h21>Удаление темы </h21>
+            <th align="left">
+                <h2>Удаление темы </h2>
             </th>
         </tr>
         <tr>
-            <td>
+            <td valign="top">
             <form method="post" data-ajax="false" enctype= multipart/form-data>
+                {% csrf_token %}
 
             Тема: {{ form.title }}<br>
             Теория: {{ form.theory }}<br>
-            Шаблон: {{ prac_form.template }}<br>
             Практика:{{ prac_form.practice }}<br>
-            <br>
+            
             {% if control %}
             {{control.management_form}}
-            <h2>Вопросы для теста</h2>
+            <h3>Вопросы для теста</h3>
             <div id = "question-form-list">
                 {% for form in control %}
                 <div class="question-form">
@@ -67,7 +65,7 @@
         </p>
       <p>
         <label for="id_form-__prefix__-is_correct">Правильный ответ:</label>
-        <select name="form-__prefix__-is_correct" class="form-Answer" placeholder="Правильный ответ или нет" id="id_form-__prefix__-is_correct">
+        <select name="form-__prefix__-is_correct" class="form-Answer" id="id_form-__prefix__-is_correct">
       <!--<option value="unknown">Неизвестно</option>-->
 
       <option value="true">Да</option>
@@ -82,15 +80,89 @@
             {% endif %}
             <button id = "add-question" type = "button">Добавить вопрос</button>
 
-            <br>
-            <button type="submit">Создать запись</button><br>
+            <br><br>
+            <button type="submit" name="create">Создать запись</button><br>
             <span>{{ error }} </span>
       </form>
 
             </td>
-            <td>
 
+            <td valign="top">
+                <form method="post" data-ajax="false" enctype= multipart/form-data>
+                    {% csrf_token %}
+
+            <select id="change_topic" name="change_topic" required = "">
+                <option value="" disabled selected> Выберите тему для редактирования: </option>
+                {% for topic in current_topics%}
+                <option> {{topic.title}}</option>
+                {%endfor%}
+            </select><br>
+
+                Тема:
+                    <input type="file" name="theory" class="form-control" accept=".pdf" id="id_theory_red">
+                    <br>
+                Практика:
+                    <input type="file" name="practice" class="form-control" accept=".xlsx,.xlsm" id="id_practice_red">
+                    <br>
+                    {% if control_red %}
+                    {{control_red.management_form}}
+                    <h3>Вопросы для теста</h3>
+                    <div id = "question-form-list-red">
+                        {% for form in control_red %}
+                        <div class="question-form-red">
+                            {{form.as_p}}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id = "empty-qurstion-form-red" class = "hidden">{{control_red.empty_form.as_p}}
+                <div id = "option-list-form-__prefix__-red" class = "hidden">
+                    <button id = "add-option-__prefix__-red" class ='hidden' type = "button">Добавить вариант ответа</button>
+                </div>
+                </div>
+                <div id = "empty-answer-form-red" class = "hidden">
+                <p>
+                <label for="id_form-__prefix__-answer-red">Вариант ответа:</label>
+                <input type="text" name="form-__prefix__-answer-red" class="form-Answer" placeholder="Введите вариант ответа" maxlength="128" id="id_form-__prefix__-answer-red">
+                </p>
+                <p>
+                <label for="id_form-__prefix__-picture-red">Изображение:</label>
+                <input type="file" name="form-__prefix__-picture-red" class="form-Answer" id="id_form-__prefix__-picture-red" accept="image/*">
+
+                </p>
+              <p>
+                <label for="id_form-__prefix__-is_correct-red">Правильный ответ:</label>
+                <select name="form-__prefix__-is_correct-red" class="form-Answer" id="id_form-__prefix__-is_correct-red">
+              <!--<option value="unknown">Неизвестно</option>-->
+
+              <option value="true">Да</option>
+
+              <option value="false" selected="">Нет</option>
+
+        </select>
+
+
+            </p>
+                </div>
+                    {% endif %}
+                <button id = "add-question-red" type = "button">Добавить вопрос</button> <br>
+                <br><button type="submit" name="change">Редактировать тему</button>
+                </form>
             </td>
+
+            <td valign="top">
+                <form name="deletion_form" method="post" data-ajax="false" enctype= multipart/form-data>
+                    {% csrf_token %}
+            <select id="delete_topic" name="delete_topic" required>
+                <option value="" disabled selected> Выберите тему для удаления: </option>
+                {% for topic in current_topics%}
+                <option> {{topic.title}}</option>
+                {%endfor%}
+            </select><br><br>
+                <button type="submit" name="delete">Удалить тему</button><br><br>
+                    {{delete_message}}
+                </form>
+            </td>
+
         </tr>
     </table>
     </div>
@@ -98,11 +170,12 @@
 
 
 <script>
+    const forms_for_questions = document.getElementsByName("form-TOTAL_FORMS")
     const addQuestion = document.getElementById("add-question")
-    const totalNewQuestions = document.getElementById("id_form-TOTAL_FORMS")
+    const totalNewQuestions = forms_for_questions[0]
+
 
     addQuestion.addEventListener("click", add_new_quest)
-
 
 
     function add_new_quest(event) {
@@ -133,7 +206,7 @@
 
         var currentAnswerLists = document.getElementsByClassName('option-list-form')
         for (i=0; i<currentAnswerLists.length; i++){
-            var cur_id = currentAnswerLists[i].id.substr(currentAnswerLists[i].id.length - 1);
+            var cur_id = currentAnswerLists[i].id.match(/\d+/)[0]
             var addOption = document.getElementById(`add-option-${cur_id}`);
             addOption.addEventListener("click", add_new_answer);
             }
@@ -145,7 +218,7 @@
 
     function add_new_answer(event){
 
-       var current_id = event.currentTarget.id.substr(event.currentTarget.id.length - 1)
+       var current_id = event.currentTarget.id.match(/\d+/)[0]
 
        const currentQuesForm = document.getElementById(`form-${current_id}-question`)
        const currentOptForms = currentQuesForm.getElementsByClassName("option-form")
@@ -162,13 +235,77 @@
 
 
 
-        optionCopyTarget.append(copyEmptyOptionForm)
+       optionCopyTarget.append(copyEmptyOptionForm)
     }
 
 
+    const addQuestionRedact = document.getElementById("add-question-red")
+    const totalNewQuestionsRed = forms_for_questions[1]
+    addQuestionRedact.addEventListener("click", add_new_quest_red)
 
 
 
+    function add_new_quest_red(event) {
+        if (event){
+            event.preventDefault()
+        }
+
+        const currentQuestionFormsRed = document.getElementsByClassName('question-form-red')
+        const currentQUesCountRed = currentQuestionFormsRed.length
+
+        const questionCopyTargetRed = document.getElementById("question-form-list-red")
+        const copyEmptyQuestionFormRed = document.getElementById("empty-qurstion-form-red").cloneNode(true)
+
+        copyEmptyQuestionFormRed.setAttribute("class", "question-form-red")
+        copyEmptyQuestionFormRed.setAttribute("id", `form-${currentQUesCountRed}-question-red`)
+
+        currentOptionListRed = copyEmptyQuestionFormRed.childNodes[6]
+        currentOptionListRed.setAttribute("class", "option-list-form-red")
+        currentOptionAddRed = currentOptionListRed.childNodes[1]
+        currentOptionAddRed.setAttribute("class", "add-option-red")
+        const regexQuesRed = new RegExp('__prefix__', 'g')
+        copyEmptyQuestionFormRed.innerHTML = copyEmptyQuestionFormRed.innerHTML.replace(regexQuesRed,currentQUesCountRed)
+
+        totalNewQuestionsRed.setAttribute("value", currentQUesCountRed+1)
+
+        questionCopyTargetRed.append(copyEmptyQuestionFormRed)
+
+
+        var currentAnswerListsRed = document.getElementsByClassName('option-list-form-red')
+
+        for (i=0; i<currentAnswerListsRed.length; i++){
+            var cur_id_red = currentAnswerListsRed[i].id.match(/\d+/)[0]
+            var addOptionRed = document.getElementById(`add-option-${cur_id_red}-red`);
+            addOptionRed.addEventListener("click", add_new_answer_red);
+            }
+
+
+    }
+
+
+    function add_new_answer_red(event){
+
+       var current_id_red = event.currentTarget.id.match(/\d+/)[0]
+
+       const currentQuesFormRed = document.getElementById(`form-${current_id_red}-question-red`)
+       const currentOptFormsRed = currentQuesFormRed.getElementsByClassName("option-form-red")
+       const currentOptCountRed = currentOptFormsRed.length
+
+
+       const optionCopyTargetRed = document.getElementById(`option-list-form-${current_id_red}-red`)
+       const copyEmptyOptionFormRed = document.getElementById("empty-answer-form-red").cloneNode(true)
+       copyEmptyOptionFormRed.setAttribute("class", "option-form-red")
+
+       copyEmptyOptionFormRed.setAttribute("id", `option-form-${current_id_red}-${currentOptCountRed}-red`)
+
+       const regexOptRed = new RegExp('__prefix__', 'g')
+
+       copyEmptyOptionFormRed.innerHTML = copyEmptyOptionFormRed.innerHTML.replace(regexOptRed,`${current_id_red}-${currentOptCountRed}`)
+
+
+
+       optionCopyTargetRed.append(copyEmptyOptionFormRed)
+    }
 
 </script>
 

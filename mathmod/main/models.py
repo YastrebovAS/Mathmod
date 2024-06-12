@@ -19,7 +19,6 @@ class topic(models.Model):
 
 class practices(models.Model):
     topic_prac = models.ForeignKey(verbose_name="Вопрос",to=topic, related_name='practice_part', on_delete=models.CASCADE)
-    template = models.FileField('Шаблон',upload_to='template', max_length=128)
     practice = models.FileField('Файл с формулами', upload_to='execs', max_length=128)
     class Meta:
         verbose_name = 'Практика'
@@ -109,7 +108,7 @@ class SessionAdmin(admin.ModelAdmin):
 class Activity(models.Model):
     user = models.ForeignKey(to=User, related_name='whose_activity', on_delete=models.CASCADE, )
     datetime = models.DateTimeField(verbose_name='Дата и время')
-    activity = models.TextField(verbose_name='Перечень посещенных страниц')
+    activity = models.TextField(verbose_name='Посещенная страница')
 
     class Meta:
         verbose_name = 'Активность студента'

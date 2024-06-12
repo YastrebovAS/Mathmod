@@ -15,6 +15,19 @@
 <div class = 'results' align="left">
     <a href = "{% url 'menu' %}"> На главную</a><br>
     <h1>Активность пользователей</h1>
+    {% for student_act in complete_array %}
+    <h4>Студент: {{student_act.0.last_name}} {{student_act.0.first_name}} {{student_act.0.patronymic}}<br></h4>
+    <h4>Действия за последний месяц:<br></h4>
+    {%for activity in student_act.1%}
+    {% if activity.2 != None %}
+    <a href = "{%url 'single_report' activity.2%}"> {{activity.0}}</a>
+    {% else %}
+    {{activity.0}}
+    {% endif%}
+    (Дата и Время:{{activity.1}}),<br>
+    {% endfor %}
+
+    {% endfor %}
     {% for activity in activities %}
     Студент: {{activity.user.last_name}} {{activity.user.first_name}} {{activity.user.patronymic}}<br>
     Дата и время: {{activity.datetime }}<br>
