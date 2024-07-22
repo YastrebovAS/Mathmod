@@ -1,0 +1,58 @@
+{% extends 'main/layout.html' %}
+{% block title %}
+Тестирование - {{ title }}
+
+{% endblock %}
+
+{% block content %}
+{% load static %}
+{% load index %}
+<a href = "{% url 'menu' %}"> На главную</a><br>
+
+        <form action="" method="post">
+
+            {% csrf_token %}
+    {% for question in questions %}
+            <h1>
+
+        {{question.question}}<br>
+        {%if question.picture %}
+            <img src="/media/{{question.picture}}" />
+            <br>
+        {% endif %}
+            </h1>
+            {%with x=forloop.counter0%}
+
+            {% for answer in answers|index:forloop.counter0 %}
+            <h2>
+
+            {%if number_of_correct_answers|index:x == 1%}
+
+
+                <input type="radio" id="{{question.id}} - {{forloop.counter}}" name="{{ question.question }}" value="{{ answer.answer }}" required>
+                <label for="{{question.id}} - {{forloop.counter}}">&emsp;&emsp;{{forloop.counter}}. {{ answer.answer }}</label>
+
+            {%else%}
+
+                <input type="checkbox" id="{{question.id}} - {{forloop.counter}}" name="{{ question.question }}" value="{{ answer.answer }}"><br>
+                <label for="{{question.id}} - {{forloop.counter}}"> &emsp;&emsp;{{forloop.counter}}. {{ answer.answer }}</label>
+            {% endif %}
+                <br>
+            {%if answer.image %}
+            <img src="/media/{{answer.image}}" />
+            {{image.width}}
+            <br>
+            {% endif %}
+            </h2>
+
+            {% endfor %}
+            {%endwith%}
+
+
+    {% endfor %}
+        <button type="submit">Отправить результаты</button>
+            </form>
+
+<br/>
+
+{% endblock %}

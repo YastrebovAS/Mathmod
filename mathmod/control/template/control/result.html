@@ -12,16 +12,22 @@
 
 <div class = 'features' align="left">
     <a href = "{% url 'menu' %}"> На главную</a><br>
-
     <h1>Результат теста:</h1>
     {%for part in request.session.restest %}
         Вопрос: {{part.0}}<br>
-        Ответ: {{part.1}}<br>
-        {% if part.2 == True %}
-        Статус: Правильно
+        Ваш ответ: {% for answer in part.1%}
+        {{answer}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+   <br>
+        Баллы:
+        {% if part.2 <= 0 %}
+        Неправильно
+        {% elif part.2 < part.3 %}
+        Частично правильно
         {% else %}
-        Статус: Неправильно
+        Правильно
         {% endif %}
+        ({{part.2}}/{{part.3}})
     <br><br>
     {% endfor %}
 </div>

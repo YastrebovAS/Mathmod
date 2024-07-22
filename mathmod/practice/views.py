@@ -31,15 +31,18 @@ def practice_display(request,practice_id):
     temp_name = str(path)[6:-4] #имя практики
     tempfile = "media/" + str(request.user) + "_" + temp_name + extension # собирается имя временного файла
     #print(tempfile)
+
+
     tables = []
 
 
     variables = []
     macro_results = []
     graphs = []
-
-    if extension == ".xlsm": #параметры открытия файля меняются взависимости от того, есть макросы или нет
+    #print(extension)
+    if extension == "xlsm": #параметры открытия файля меняются взависимости от того, есть макросы или нет
         starter_wb = openpyxl.load_workbook(path, read_only=False, keep_vba=True)
+
     else:
         starter_wb = openpyxl.load_workbook(path)
 
@@ -66,21 +69,62 @@ def practice_display(request,practice_id):
             input_val = return_cell_range(input_sheet[input_val])
 
         if input_name.value != None:
-            inputs.append((input_name.value, input_val, input_measurement, input_step,
-                           input_min,
-                           input_max, address, input_type))
+            inputs.append([input_name.value, input_val, input_measurement, input_step,
+                           input_min, input_max, address, input_type])
+
+    starter_tables_sheet = starter_wb['Начальные таблицы']
+
+    start_tables = []
+    starter_names = []
+
+    f = 1
+    starter_tables_empty_row_counter = 0
+    while starter_tables_empty_row_counter != 1:
+        calc_row = starter_tables_sheet.cell(row=f, column=1)
+        if starter_tables_sheet.cell(row=f, column=2).value == None:
+            starter_names.append(f)
+        if calc_row.value == None:
+            starter_tables_empty_row_counter += 1
+        f += 1
+
+
+    starter_prev_rows = 1
+    for w in range(0, len(starter_names) - 1):
+        upper_border = starter_names[w]
+        lower_border = starter_names[w + 1]
+        name = starter_tables_sheet.cell(row=upper_border, column=1).value
+
+        last_column = 0
+        while True:
+            if starter_tables_sheet.cell(row=upper_border + 1, column=last_column + 1).value is not None:
+                last_column += 1
+
+            else:
+                break
+        # print(starter_prev_rows, lower_border)
+        table_dataframe = pd.read_excel('media/'+ str(path), sheet_name='Начальные таблицы', skiprows=starter_prev_rows,
+                                        nrows=lower_border - upper_border - 2,
+                                        usecols=[x for x in range(0, last_column)])
+        # print(table_dataframe)
+        json_records = table_dataframe.reset_index().to_json(orient='records')
+        data2 = json.loads(json_records)
+        start_tables.append((name, data2, list(table_dataframe.columns)))
+        starter_prev_rows = lower_border
 
     if request.method =='POST':
 
         for v in range(0,len(inputs)):
             if inputs[v][7] == 'массив':
                 array_range = input_sheet[inputs[v][6]].value
-                values_that_need_to_be_replaced = list(input_sheet[array_range])
-                for q in range(len(values_that_need_to_be_replaced)):
-                    values_that_need_to_be_replaced[q][0].value = request.POST.getlist(inputs[v][0])[q]
+                values_to_be_replaced = list(input_sheet[array_range])
+                for q in range(len(values_to_be_replaced)):
+                    values_to_be_replaced[q][0].value = request.POST.getlist(inputs[v][0])[q]
+                inputs[v][1] = request.POST.getlist(inputs[v][0])
             else:
                 input_sheet[inputs[v][6]].value = request.POST[inputs[v][0]].replace(".",",")
+                inputs[v][1] = request.POST[inputs[v][0]]
 
+        
         starter_wb.save(tempfile)
 
         macros = []
@@ -91,7 +135,7 @@ def practice_display(request,practice_id):
         while True:
             if res[macro_counter, 10].value is not None:
                 macros.append(res[macro_counter, 10].value)
-                print(res[macro_counter, 10].value)
+                #print(res[macro_counter, 10].value)
                 macro_counter += 1
             else:
                 break
@@ -149,7 +193,6 @@ def practice_display(request,practice_id):
             prev_rows = lower_border
 
         for d in range(2, macro_counter+1):
-            print(d)
             macro_results.append((results.cell(row=d, column=10).value, results.cell(row=d, column=12).value,
                                   results.cell(row=d, column=13).value))
         result_var_counter = 1
@@ -171,7 +214,7 @@ def practice_display(request,practice_id):
                 result_graph_counter += 1
             else:
                 break
-        # print(result_graph_counter)
+        #print(result_graph_counter)
 
         prev_graph = 1
         y_axis = []
@@ -203,7 +246,8 @@ def practice_display(request,practice_id):
         os.remove(tempfile)
 
 
-    context = {'inputs': inputs,
+    context = {'starter_tables':start_tables,
+                'inputs': inputs,
                'tables': tables,
                'outputs': variables,
                'graphs': graphs,
@@ -224,4 +268,4 @@ def practice_display(request,practice_id):
 
 
 
-    return render(request, 'main/practice.html', context)
+    return render(request, 'practice/practice.html', context)

@@ -1,0 +1,234 @@
+{% extends 'practice/practice_template.html' %}
+{% load l10n %}
+
+{% block title %}
+Практика
+{% endblock %}
+
+{% block content %}
+<meta name = "practice_look">
+<style>
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.arrayInput {
+ width: 9em;
+}
+</style>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'start_tables')">Начальные таблицы</button>
+  <button class="tablinks" onclick="openTab(event, 'inputs')" id="defaultOpen">Входные данные</button>
+  <button class="tablinks" onclick="openTab(event, 'calculations')">Расчеты</button>
+  <button class="tablinks" onclick="openTab(event, 'results')">Результат</button>
+</div>
+
+<div id="start_tables" class="tabcontent">
+  {%if starter_tables%}
+    {%for table in starter_tables%}
+    <div class = 'container' align="left">
+    <h2 class="text-center" ><i>{{table.0}}</i></h2>
+    <br>
+    <table class="table table-dark table-striped" width="20%">
+        <thead>
+        <tr>
+            <th></th>
+            {% for head in table.2%}
+            <th>{{head}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+        <tbody>
+    {% for p in table.1 %}
+    <tr>
+        {% for key,value in p.items%}
+            <td>{{value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+        </table>
+<br>
+    </div>
+    {% endfor %}
+    {%else%}
+    <h4>Для этой темы нет начальных таблиц</h4>
+    {%endif%}
+</div>
+
+<div id="inputs" class="tabcontent">
+  <form action="" method="post">
+    {% csrf_token %}
+
+    <p>
+    {% for input in inputs %}
+        <label for="input{{forloop.counter0}}">{{input.0}}:</label>
+    {% if input.7 == "выбор" %}
+            <select id="input{{forloop.counter0}}" name="{{input.0}}">
+                {% for opt in input.2 %}
+                <option {%if opt == input.1%} selected {% endif %}>
+                {{opt}}
+
+                </option>
+                {% endfor %}
+        </select><br>
+    {% elif input.7 == "значение" %}
+        <input type="number" id="input{{forloop.counter0}}" name="{{input.0}}" step=any min = {{input.4|unlocalize}} value="{{input.1|unlocalize}}" max = {{input.5|unlocalize}}>
+        {%if input.2 != None %}{{input.2}}{% endif %}<br>
+    {% elif input.7 == "массив" %}
+        <table id="input{{forloop.counter0}}" >
+        <thead>
+            <tr>
+                {% for number in input.1 %}
+
+            <th>{{forloop.counter}}</th>
+
+                {% endfor %}
+
+            </tr>
+        </thead>
+    <tbody>
+            <tr>
+            {% for number in input.1 %}
+
+                <td><input type="number" class = "arrayInput" name="{{input.0}}" value="{{number|unlocalize}}" size = 4 step = any min = {{input.4|unlocalize}} max = {{input.5|unlocalize}}></td>
+
+            {% endfor %}
+        </tr>
+    </tbody>
+    </table>
+    {% endif %}
+
+    {% endfor %}
+
+    </p>
+        <button type="submit">Ввести входные данные</button><br>
+    <label for="testing_mode"> Отправить результаты</label>
+<input type="checkbox" id="testing_mode" name="testing_mode[]" value="non_testing"><br>
+      </form>
+</div>
+
+<div id="calculations" class="tabcontent">
+{% if tables %}
+{% for table in tables%}
+<div class = 'container' align="left">
+    <h2 class="text-center" ><i>{{table.0}}</i></h2>
+    <br>
+    <table class="table table-dark table-striped" width="20%">
+        <thead>
+        <tr>
+            <th></th>
+            {% for st in table.2%}
+            <th>{{st}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+        <tbody>
+    {% for i in table.1 %}
+    <tr>
+        {% for key,value in i.items%}
+            <td>{{value}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}<br>
+    </tbody>
+        </table>
+<br>
+    </div>
+{%endfor%}
+{%else%}
+    <h4>Введите входные данные</h4>
+{% endif %}
+</div>
+
+<div id="results" class="tabcontent">
+
+{% if outputs or graphs or macros%}
+
+{%for macro in macros%}
+<div class = 'container' align="left">
+    {{ macro.0 }}: {{macro.1}} {%if macro.2 != None %}{{macro.2}}{% endif %}
+    <br>
+    </div>
+{%endfor%}
+
+{%for output in outputs%}
+<div class = 'container' align="left">
+    {{ output.0 }}: {{output.1}} {%if output.3 != None %}{{output.2}}{% endif %}
+    <br>
+    </div>
+{%endfor%}
+
+{%for graph in graphs%}
+<div style="width:1000;height:100">
+    {{ graph|safe }}
+    </div>
+{%endfor%}
+{%else%}
+    <h4>Введите входные данные</h4>
+{% endif %}
+</div>
+
+
+
+<script>
+  document.getElementById("defaultOpen").click();
+
+  function openTab(evt, cityName) {
+  console.log(cityName)
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+{% endblock %}
+
+
+

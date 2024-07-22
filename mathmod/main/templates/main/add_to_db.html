@@ -82,7 +82,7 @@
 
             <br><br>
             <button type="submit" name="create">Создать запись</button><br>
-            <span>{{ error }} </span>
+            <span>{{ create_message }} </span>
       </form>
 
             </td>
@@ -98,7 +98,7 @@
                 {%endfor%}
             </select><br>
 
-                Тема:
+                Теория:
                     <input type="file" name="theory" class="form-control" accept=".pdf" id="id_theory_red">
                     <br>
                 Практика:
@@ -146,6 +146,7 @@
                     {% endif %}
                 <button id = "add-question-red" type = "button">Добавить вопрос</button> <br>
                 <br><button type="submit" name="change">Редактировать тему</button>
+                   <br> {{edit_message}}
                 </form>
             </td>
 
@@ -165,6 +166,7 @@
 
         </tr>
     </table>
+
     </div>
 
 

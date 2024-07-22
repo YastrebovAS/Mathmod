@@ -26,4 +26,4 @@ def theory_id(request, theory_id):
             'error': 'Докумена с этой теорией не существует',
 
         }
-        return render(request, 'main/fail.html', context)
+        return render(request, 'theory/fail.html', context)

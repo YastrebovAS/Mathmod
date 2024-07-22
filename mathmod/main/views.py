@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.forms import formset_factory
 from django.http import HttpResponse
 from .models import *
-from .forms import topicForm,practicesForm,questionsForm
+from .forms import topicForm,practicesForm,questionsForm,inputform
 import os
 from datetime import datetime,timedelta
 
@@ -21,14 +21,16 @@ def menu(request):
         'role': str(perms)
     }
 
-    print(dict(request.session))
     return render(request,'main/menu.html',context)
 
 def edit_topics(request):
     error = ''
     delete_message = ""
+    edit_message = ""
+    create_message = ""
     questionformset = formset_factory(questionsForm, extra=0)
     current_topics = topic.objects.all()
+
     form = topicForm()
     prac_form = practicesForm()
     control = questionformset()
@@ -40,37 +42,47 @@ def edit_topics(request):
             practice_for_deletion = practices.objects.get(topic_prac = topic_for_deletion)
             os.remove("media/" + str(topic_for_deletion.theory))
             os.remove("media/" + str(practice_for_deletion.practice))
-            topic_for_deletion.delete()
-            delete_message = "Произошло удаление"
+            try:
+                topic_for_deletion.delete()
+                delete_message = "Произошло удаление"
+            except:
+                error = "Что-то пошло не так при удалении"
         if "change" in request.POST:
             redacted_topic = topic.objects.get(title=request.POST['change_topic'])
             redacted_topic_practice = practices.objects.get(topic_prac = redacted_topic)
             control_red = questionformset(request.POST, request.FILES)
             if "theory" in request.FILES.keys():
+
                 os.remove("media/" + str(redacted_topic.theory))
                 redacted_topic.theory = request.FILES["theory"]
-                #print(request.FILES["theory"])
                 redacted_topic.save()
+
             if "practice" in request.FILES.keys():
+
                 os.remove("media/" + str(redacted_topic_practice.practice))
                 redacted_topic_practice.practice = request.FILES["practice"]
-                #print(request.FILES["practice"])
                 redacted_topic_practice.save()
+
             if control_red.is_valid():
+
                 if len(control_red) != 0:
+
                     questions_to_delete = questions.objects.filter(topic_test = redacted_topic)
                     for question in questions_to_delete:
                         answers_to_delete = Answer.objects.filter(question = question)
                         answers_to_delete.delete()
                     questions_to_delete.delete()
+
                     for k in range(len(control_red)):
                         if f'form-{k}-picture' in request.FILES.keys():
+
                             quesim = request.FILES[f'form-{k}-picture']
                         else:
                             quesim = None
                         newques_red = questions(topic_test=redacted_topic, question=request.POST[f'form-{k}-question'],
                                             picture=quesim,
                                             marks=request.POST[f'form-{k}-marks'])
+
                         newques_red.save()
                         for key in request.POST:
                             if key.startswith(f'form-{k}') and key.endswith('is_correct-red'):
@@ -89,15 +101,15 @@ def edit_topics(request):
                                     ansim = None
 
                                 newans_red = Answer(question=newques_red,
-                                                answer=request.POST[f'form-{k}' + '-' + f'{k}-answer-red'],
+                                                answer=request.POST[f'form-{k}' + '-' + f'{m}-answer-red'],
                                                 image=ansim, is_correct=correction)
+                                print(newans_red)
+                                print(newans_red.image)
                                 newans_red.save()
                         except:
-                            error = 'Каждый вопрос должен сопровождаться как минимум 2-мя ответами'
+                            error = 'Что-то пошло не так при редиктировании'
 
-
-
-            error = "Произошло Редактирование"
+            edit_message = "Произошло Редактирование"
         if "create" in request.POST:
             #print(request.POST)
 
@@ -107,9 +119,9 @@ def edit_topics(request):
 
             if prac_form.is_valid() and form.is_valid() and control.is_valid():
                 newtopic = topic(theory=request.FILES['theory'], title=request.POST['title'])
-                #newtopic.save()
+                newtopic.save()
                 newprac = practices(topic_prac = newtopic,practice = request.FILES['practice'])
-                #newprac.save()
+                newprac.save()
 
                 for i in range(len(control)):
                     if f'form-{i}-picture' in request.FILES.keys():
@@ -119,7 +131,7 @@ def edit_topics(request):
                     newques = questions(topic_test = newtopic, question = request.POST[f'form-{i}-question'],
                                         picture = quesim,
                                         marks = request.POST[f'form-{i}-marks'])
-                    #newques.save()
+                    newques.save()
                     for key in request.POST:
                         if key.startswith(f'form-{i}') and key.endswith('is_correct'):
                             current_sub_id = int(key.replace(f'form-{i}-','').replace('-is_correct',''))
@@ -138,7 +150,7 @@ def edit_topics(request):
 
                             newans = Answer(question = newques, answer = request.POST[f'form-{i}' + '-' + f'{z}-answer'],
                                             image = ansim, is_correct = correction)
-                            #newans.save()
+                            newans.save()
                     except:
                         error = 'Каждый вопрос должен сопровождаться как минимум 2-мя ответами'
 
@@ -152,11 +164,11 @@ def edit_topics(request):
         'control': control,
         'control_red':control_red,
         'error': error,
+        "create_message" : create_message,
+        "edit_message": edit_message,
         "delete_message":delete_message
     }
     return render(request,'main/add_to_db.html',data)
-
-
 
 
 def result_list(request):
@@ -202,3 +214,6 @@ def activity_list(request):
     }
 
     return render(request, 'main/activity_list.html',context)
+
+
+

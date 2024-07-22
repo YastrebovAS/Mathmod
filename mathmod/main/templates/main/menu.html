@@ -18,7 +18,7 @@
   float: left;
   width: 33.33%;
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  height: 500px; /* Should be removed. Only for demonstration */
 }
 
 /* Clear floats after the columns */
@@ -36,44 +36,42 @@
 <h2>Меню</h2>
  <a href="{% url 'logout' %}"><button>Выйти из системы</button></a><br>
 <div class="row">
-  <div class="column" style="background-color:#aaa;">
+    <div class="column" style="background-color:#aaa; opacity: 1">
     <h2>Теория</h2>
     {% for a in titles %}
-    <a href="{%url 'theory:theorylisting' a.id%}">{{a.title}}</a><br>
+      <font size="+2"><a href="{%url 'theory:theorylisting' a.id%}" target="_blank">{{a.title}}</a></font><br>
     {% endfor %}
   </div>
 
   <div class="column" style="background-color:#bbb;">
     <h2>Практика</h2>
       {% for p in pracs %}
-      <a href="{%url 'practice:prac' p.id%}">{{p.topic_prac.title}}</a><br>
+      <font size="+2"><a href="{%url 'practice:prac' p.id%}">{{p.topic_prac.title}}</a></font><br>
       {% endfor %}
   </div>
 
   <div class="column" style="background-color:#ccc;">
     <h2>Контроль</h2>
       {% for c in conts %}
-        <a href="{%url 'control:ctrllist' c.id%}"> {{c.title}} </a><br>
+        <font size="+2"><a href="{%url 'control:ctrllist' c.id%}"> {{c.title}} </a></font><br>
       {% endfor %}
   </div>
 </div>
 
 <table>
   <tr>
-    {% if role != "user_def" %}
+    {% if role != "user" %}
       <td><a href="{% url 'create' %}"><button>Изменить каталог</button></a><br></td>
-    {% endif %}
-    {% if role == 'admin' %}
-      <td><a href="../admin"><button>Панель администратора</button></a><br></td>
-    {% endif %}
-    {% if role == 'admin' %}
+
+      <td><a href="{% url 'activity_list' %}"><button>Отслеживание активности</button></a><br></td>
+
       <td><a href="{% url 'resultlist' %}"><button>Результаты тестирования</button></a><br></td>
-    {% endif %}
-    {% if role == 'admin' %}
+
+
       <td><a href="{% url 'reportlist' %}"><button>Результаты практики</button></a><br></td>
     {% endif %}
     {% if role == 'admin' %}
-      <td><a href="{% url 'activity_list' %}"><button>Отслеживание активности</button></a><br></td>
+      <td><a href="../admin"><button>Панель администратора</button></a><br></td>
     {% endif %}
   </tr>
 </table>
