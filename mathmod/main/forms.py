@@ -1,9 +1,11 @@
-from .models import topic, practices,questions,Answer
+from .models import topic, practices, questions, Answer
 from django import forms
-from django.forms import ModelForm, TextInput, FileInput, NumberInput,NullBooleanSelect, NullBooleanField,Select,Form
+from django.forms import ModelForm, TextInput, FileInput, NumberInput
+# формы, через которые частично производится создание/редактирование тем
+# наверное, можно было бы обойтись без них, но они были созданы, когда я только начинал осваивать функционал форм
 
 
-class topicForm(ModelForm):
+class TopicForm(ModelForm):  # форма состоящая из полей для названия темы и для загрузки файля с теориейй
     class Meta:
         model = topic
         fields = ['title', 'theory']
@@ -18,7 +20,9 @@ class topicForm(ModelForm):
                 'accept': '.pdf'
             })
         }
-class practicesForm(ModelForm):
+
+
+class PracticeForm(ModelForm):  # форма состоящая из поля для загрузки файля с практикой
     class Meta:
         model = practices
         fields = ['practice']
@@ -27,38 +31,24 @@ class practicesForm(ModelForm):
                 'class': 'form-control',
                 'label': 'Select a file',
                 'accept': '.xlsx,.xlsm'
-        })
+            })
         }
-class questionsForm(ModelForm):
+
+
+class QuestionForm(ModelForm):  # форма для вопроса, состоит из полей для формулировки вопроса, загрузки изображения и баллов за вопрос
     class Meta:
         model = questions
-        fields = ['question','picture','marks']
+        fields = ['question', 'picture', 'marks']
         widgets = {
             "question": TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите вопрос'
             }),
-            'picture':FileInput(attrs={
+            'picture': FileInput(attrs={
                 'class': 'form-control',
                 'accept': 'image/*'
             }),
             "marks": NumberInput(attrs={
                 'class': 'form-control'
-        })
-        }
-
-
-class inputform(Form):
-    your_name = forms.CharField(label="Your name", max_length=100)
-    class Meta:
-        fields = ['number', 'choice']
-        widgets = {
-            "title": TextInput(attrs={
-                'class': 'input_text',
-                'placeholder': 'Тема'
-            }),
-            "theory": Select(attrs={
-                'class': 'input_select',
-                'placeholder': 'Тема'
-            }),
+            })
         }

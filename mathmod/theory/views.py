@@ -5,25 +5,26 @@ from main.models import topic, User, Activity
 from mathmod import settings
 from datetime import datetime
 
-def theory_id(request, theory_id):
+
+def single_theory(request, theory_id):  # Функция для демонстрации теории
 
     try:
-        topic_list = topic.objects.get(id = theory_id)
+        topic_list = topic.objects.get(id=theory_id)  # Берется соответствующая теория
 
         title = topic_list.title
         path = topic_list.theory
 
-        filepath = os.path.join(settings.MEDIA_ROOT + '/' + str(path))
+        filepath = os.path.join(settings.MEDIA_ROOT + '/' + str(path))  # Находится путь к файлу с теорией
 
-        current_user = User.objects.get(id = request.user.id)
-        newactivity = Activity(user=current_user, datetime=datetime.now(), activity=f'Посетил теорию темы "{title}"')
-        newactivity.save()
+        current_user = User.objects.get(id=request.user.id)
+        new_activity = Activity(user=current_user, datetime=datetime.now(), activity=f'Посетил теорию темы "{title}"')
+        new_activity.save()  # Записывается факт посещения пользователем теории
 
         return FileResponse(open(filepath, 'rb'), content_type='application/pdf')
-    except:
+    except:  # Если файла не существует, выдает ошибку и просит вернуться в каталог
         context = {
             'title': 'Ошибка',
-            'error': 'Докумена с этой теорией не существует',
+            'error': 'Документа с этой теорией не существует',
 
         }
         return render(request, 'theory/fail.html', context)
