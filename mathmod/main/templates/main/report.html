@@ -1,10 +1,10 @@
 {{text |safe }}
 
 <script>
-    var mainlink = document.getElementsByTagName('a')[0]
-    mainlink.setAttribute("href", "../practice_results")
-    mainlink.textContent="Вернуться к списку отчетов"
-    var submitbutton = document.getElementsByTagName('button')[0]
+    var title = document.getElementsByTagName('title')[0]
+    title.textContent="Отчет практики"
+    console.log(title)
+    var submitbutton = document.getElementsByTagName('button')[4]
     submitbutton.remove()
     var sendResultsCheckbox = document.getElementById('testing_mode')
     sendResultsCheckbox.remove()

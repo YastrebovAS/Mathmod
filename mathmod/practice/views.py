@@ -59,16 +59,15 @@ def practice_display(request, practice_id):
         input_type = input_sheet.cell(row=number_of_inputs, column=2).value  # Тип(значение/массив/выбор)
         input_val = input_sheet.cell(row=number_of_inputs, column=3).value  # Значение по умолчанию
         input_measurement = input_sheet.cell(row=number_of_inputs, column=4).value   # Единицы измерения/Варианты выбора
-        input_step = input_sheet.cell(row=number_of_inputs, column=5).value  # Шаг
-        input_min = input_sheet.cell(row=number_of_inputs, column=6).value  # Максимум
-        input_max = input_sheet.cell(row=number_of_inputs, column=7).value  # Минимум
+        input_min = input_sheet.cell(row=number_of_inputs, column=5).value  # Минимум
+        input_max = input_sheet.cell(row=number_of_inputs, column=6).value  # Максимум
         address = input_sheet.cell(row=number_of_inputs, column=3).coordinate   # Ячейка excel, в которой находится значение переменной
         if input_type == 'выбор':
             input_measurement = input_measurement.split(",")  # Если тип "выбор", создается массив из вариантов выбора
         elif input_type == 'массив':
             input_val = return_cell_range(input_sheet[input_val])  # Если тип "массив", в значение записывается массив значений диапазона
         if input_name.value is not None:  # Если строка не пустая, все данные записываются в массив входных данных
-            inputs.append([input_name.value, input_val, input_measurement, input_step,
+            inputs.append([input_name.value, input_val, input_measurement,
                            input_min, input_max, address, input_type])
 
     starter_tables_sheet = starter_wb['Начальные таблицы']
@@ -115,14 +114,14 @@ def practice_display(request, practice_id):
     if request.method == 'POST':  # Если пользователь ввел входные данные
 
         for v in range(0, len(inputs)):  # Проверяются введенные пользователем входные данные
-            if inputs[v][7] == 'массив':
-                array_range = input_sheet[inputs[v][6]].value
+            if inputs[v][6] == 'массив':
+                array_range = input_sheet[inputs[v][5]].value
                 values_to_be_replaced = list(input_sheet[array_range])
                 for q in range(len(values_to_be_replaced)):
                     values_to_be_replaced[q][0].value = request.POST.getlist(inputs[v][0])[q]  # Значения МАССИВА во временном файле меняются на введенные значения
                 inputs[v][1] = request.POST.getlist(inputs[v][0])  # Это чтобы на странице введенные значения остались такими же после ввода
             else:
-                input_sheet[inputs[v][6]].value = request.POST[inputs[v][0]].replace(".", ",")  # ВЫБОР и ЗНАЧЕНИЕ во временном файле меняются на введенные
+                input_sheet[inputs[v][5]].value = request.POST[inputs[v][0]].replace(".", ",")  # ВЫБОР и ЗНАЧЕНИЕ во временном файле меняются на введенные
                 inputs[v][1] = request.POST[inputs[v][0]]   # Это чтобы на странице введенные значения остались такими же после ввода
 
         

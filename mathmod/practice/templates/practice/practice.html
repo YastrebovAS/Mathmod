@@ -94,7 +94,7 @@
     <p>
     {% for input in inputs %}
         <label for="input{{forloop.counter0}}">{{input.0}}:</label>
-    {% if input.7 == "выбор" %}
+    {% if input.6 == "выбор" %}
             <select id="input{{forloop.counter0}}" name="{{input.0}}">
                 {% for opt in input.2 %}
                 <option {%if opt == input.1%} selected {% endif %}>
@@ -103,10 +103,10 @@
                 </option>
                 {% endfor %}
         </select><br>
-    {% elif input.7 == "значение" %}
-        <input type="number" id="input{{forloop.counter0}}" name="{{input.0}}" step=any min = {{input.4|unlocalize}} value="{{input.1|unlocalize}}" max = {{input.5|unlocalize}}>
+    {% elif input.6 == "значение" %}
+        <input type="number" id="input{{forloop.counter0}}" name="{{input.0}}" step=any min = {{input.3|unlocalize}} value="{{input.1|unlocalize}}" max = {{input.4|unlocalize}}>
         {%if input.2 != None %}{{input.2}}{% endif %}<br>
-    {% elif input.7 == "массив" %}
+    {% elif input.6 == "массив" %}
         <table id="input{{forloop.counter0}}" >
         <thead>
             <tr>
@@ -122,7 +122,7 @@
             <tr>
             {% for number in input.1 %}
 
-                <td><input type="number" class = "arrayInput" name="{{input.0}}" value="{{number|unlocalize}}" size = 4 step = any min = {{input.4|unlocalize}} max = {{input.5|unlocalize}}></td>
+                <td><input type="number" class = "arrayInput" name="{{input.0}}" value="{{number|unlocalize}}" size = 4 step = any min = {{input.3|unlocalize}} max = {{input.4|unlocalize}}></td>
 
             {% endfor %}
         </tr>
