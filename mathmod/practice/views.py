@@ -213,7 +213,12 @@ def practice_display(request, practice_id):
 
 
         for n in range(2, result_var_counter):  # Запись результатов типа "значение"
-            variables.append((results.cell(row=n, column=1).value, results.cell(row=n, column=3).value,
+            if results.cell(row=n, column=2).value == "массив":
+                variable_range = return_cell_range(results[str(results.cell(row=n, column=3).value)])
+                variables.append((results.cell(row=n, column=1).value, variable_range,
+                                  results.cell(row=n, column=4).value))
+            else:
+                variables.append((results.cell(row=n, column=1).value, results.cell(row=n, column=3).value,
                               results.cell(row=n, column=4).value))
 
 
@@ -268,7 +273,7 @@ def practice_display(request, practice_id):
     title = practices.objects.select_related('topic_prac').get(id=practice_id).topic_prac.title  # Тема практики
 
     if request.POST.getlist("testing_mode[]") == ['non_testing']:  # Если практика проводится НЕ в тестовом режиме
-        report = render_to_string("main/practice.html", context=context) + ""
+        report = render_to_string("practice/practice.html", context=context) + ""
         new_prac_report = PracticeReport(student=current_user, practice=current_practice, report=report,
                                          date=datetime.now())
         new_prac_report.save()  # Сохраняется отчет практики

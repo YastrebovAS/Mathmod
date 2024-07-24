@@ -148,8 +148,9 @@ def edit_topics(request):  # функция для создания/редакт
                             else:
                                 answer_image = None
 
-                            newans = Answer(question=ewques, answer=request.POST[f'form-{i}' + '-' + f'{z}-answer'],
+                            newans = Answer(question=newques, answer=request.POST[f'form-{i}' + '-' + f'{z}-answer'],
                                             image=answer_image, is_correct=correction)
+                            print(newans)
                             newans.save()  # каждый ответ к конкретному вопросу сохраняется
                     except:
                         error = 'Что-то пошло не так при создании тестовой части'

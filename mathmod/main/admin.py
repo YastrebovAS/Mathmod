@@ -24,7 +24,7 @@ class AnswerAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("last_name", "first_name","patronymic","role")
+    list_display = ("username","last_name", "first_name","patronymic","role")
 
 @admin.register(results)
 class resultsAdmin(admin.ModelAdmin):
